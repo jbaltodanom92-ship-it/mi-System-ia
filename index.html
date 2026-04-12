@@ -24,56 +24,46 @@
             --glass: rgba(255, 255, 255, 0.03);
         }
 
-        body { 
-            margin: 0; 
-            background: var(--bg-dark); 
-            color: white; 
-            font-family: 'Roboto', sans-serif; 
-            overflow: hidden; 
-            height: 100vh; 
-        }
+        body { margin: 0; background: var(--bg-dark); color: white; font-family: 'Roboto', sans-serif; overflow: hidden; height: 100vh; }
         
-        /* TARJETAS DE LOGIN Y BIENVENIDA */
         .ia-card { 
-            background: var(--glass); 
-            padding: 40px; 
-            border-radius: 40px; 
-            border: 1px solid var(--neon-blue); 
-            width: 90%; 
-            max-width: 400px; 
-            text-align: center; 
-            backdrop-filter: blur(15px); 
-            box-shadow: 0 0 50px rgba(0, 210, 255, 0.1); 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            transition: 0.5s; 
-            z-index: 10; 
+            background: var(--glass); padding: 40px; border-radius: 40px; border: 1px solid var(--neon-blue); 
+            width: 90%; max-width: 400px; text-align: center; backdrop-filter: blur(15px); 
+            box-shadow: 0 0 50px rgba(0, 210, 255, 0.1); position: absolute; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); transition: 0.5s; z-index: 10; 
         }
 
         h2 { font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 3px; color: var(--neon-blue); margin-bottom: 30px; }
         
         input { 
-            width: 100%; 
-            background: none; 
-            border: none; 
-            border-bottom: 2px solid #222; 
-            color: white; 
-            padding: 15px; 
-            text-align: center; 
-            font-size: 1.2rem; 
-            font-family: 'Orbitron'; 
-            outline: none; 
-            margin-top: 10px; 
-            box-sizing: border-box; 
+            width: 100%; background: none; border: none; border-bottom: 2px solid #222; 
+            color: white; padding: 15px; text-align: center; font-size: 1.2rem; 
+            font-family: 'Orbitron'; outline: none; margin-top: 10px; box-sizing: border-box; 
         }
 
         input:focus { border-bottom-color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
         input.error { border-bottom-color: var(--neon-red); animation: shake 0.3s; }
 
         .ia-status { font-size: 0.8rem; margin-top: 20px; min-height: 45px; color: #888; line-height: 1.4; }
-        .wa-link { display: block; margin-top: 15px; font-size: 0.75rem; color: var(--neon-blue); text-decoration: none; font-weight: bold; }
+        
+        /* CORRECCIÓN DE ENLACES WHATSAPP */
+        .wa-link { 
+            display: inline-block; 
+            margin-top: 20px; 
+            font-size: 0.8rem; 
+            color: var(--neon-green) !important; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-family: 'Orbitron';
+            border: 1px solid var(--neon-green);
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 100; /* Asegura que esté por encima de otros elementos */
+            position: relative;
+        }
+        .wa-link:hover { background: rgba(57, 255, 20, 0.1); box-shadow: 0 0 15px var(--neon-green); }
 
         .btn-next { 
             background: linear-gradient(45deg, var(--neon-blue), #004e92); 
@@ -82,73 +72,34 @@
             display: none; box-shadow: 0 5px 15px rgba(0, 210, 255, 0.3);
         }
 
-        /* DASHBOARD FUTURISTA */
-        #dashboard { 
-            display: none; height: 100vh; flex-direction: column; padding: 30px; 
-            box-sizing: border-box; background: radial-gradient(circle at top, #0a192f, #050b18); 
-            overflow-y: auto; 
-        }
-
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 40px; border-bottom: 1px solid rgba(0, 210, 255, 0.2); padding-bottom: 15px;
-        }
-
-        .grid-buttons { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 20px; max-width: 1100px; margin: 0 auto; width: 100%; 
-        }
-        
-        .smart-btn { 
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--neon-blue); 
-            padding: 30px 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.4s; 
-        }
-
-        .smart-btn:hover { 
-            background: rgba(0, 210, 255, 0.1); transform: translateY(-5px); 
-            border-color: var(--neon-green); box-shadow: 0 5px 20px rgba(0, 210, 255, 0.2); 
-        }
-
-        .smart-btn h3 { font-family: 'Orbitron'; font-size: 0.75rem; margin: 0; color: var(--neon-blue); letter-spacing: 1px; }
-        .smart-btn p { font-size: 0.6rem; color: #666; margin-top: 8px; text-transform: uppercase; }
-
-        .btn-exit { 
-            background: none; border: 1px solid var(--neon-red); color: var(--neon-red); 
-            padding: 10px 20px; border-radius: 30px; font-family: 'Orbitron'; cursor: pointer; font-size: 0.7rem; transition: 0.3s;
-        }
-
-        .bday-alert { 
-            background: rgba(157, 80, 187, 0.1); border: 1px dashed var(--neon-purple); 
-            padding: 15px; border-radius: 15px; margin-top: 20px; display: none; 
-        }
-        
-        .overlay-exit { 
-            position:fixed; inset:0; background:black; display:flex; justify-content:center; 
-            align-items:center; z-index:2000; font-family:'Orbitron'; color:var(--neon-blue); 
-            text-align:center; padding:20px; animation: fadeIn 0.5s; 
-        }
-
+        #dashboard { display: none; height: 100vh; flex-direction: column; padding: 30px; box-sizing: border-box; background: radial-gradient(circle at top, #0a192f, #050b18); overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid rgba(0, 210, 255, 0.2); padding-bottom: 15px; }
+        .grid-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto; width: 100%; }
+        .smart-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--neon-blue); padding: 30px 15px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.4s; }
+        .smart-btn:hover { background: rgba(0, 210, 255, 0.1); transform: translateY(-5px); border-color: var(--neon-green); box-shadow: 0 5px 20px rgba(0, 210, 255, 0.2); }
+        .smart-btn h3 { font-family: 'Orbitron'; font-size: 0.75rem; margin: 0; color: var(--neon-blue); }
+        .btn-exit { background: none; border: 1px solid var(--neon-red); color: var(--neon-red); padding: 10px 20px; border-radius: 30px; font-family: 'Orbitron'; cursor: pointer; font-size: 0.7rem; }
+        .bday-alert { background: rgba(157, 80, 187, 0.1); border: 1px dashed var(--neon-purple); padding: 15px; border-radius: 15px; margin-top: 20px; display: none; }
+        .overlay-exit { position:fixed; inset:0; background:black; display:flex; justify-content:center; align-items:center; z-index:2000; font-family:'Orbitron'; color:var(--neon-blue); text-align:center; padding:20px; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .hidden { display: none !important; }
-
     </style>
 </head>
 <body>
 
     <div id="login-container" class="ia-card">
-        <h2 id="title-label">SISTEMA DE IDENTIFICACIÓN</h2>
+        <h2 id="title-label">IDENTIFICACIÓN</h2>
         <div id="step-user">
             <input type="text" id="user-field" placeholder="USUARIO" autocomplete="off">
-            <div id="user-status" class="ia-status">Inicie sesión para acceder al entorno.</div>
-            <a id="wa-user" class="wa-link hidden" target="_blank">¿OLVIDASTE TU USUARIO? WHATSAPP</a>
+            <div id="user-status" class="ia-status">Inicie sesión para acceder.</div>
+            <a id="wa-user" class="wa-link hidden" target="_blank">SOLICITAR USUARIO</a>
             <button id="btn-goto-pin" class="btn-next" onclick="irAPin()">SIGUIENTE ➔</button>
         </div>
         <div id="step-pin" class="hidden">
             <input type="password" id="pin-field" placeholder="PIN" maxlength="6">
-            <div id="pin-status" class="ia-status">Identidad reconocida. Ingrese PIN de seguridad.</div>
-            <a id="wa-pin" class="wa-link hidden" target="_blank">¿OLVIDASTE TU PIN? WHATSAPP</a>
-            <button id="btn-do-login" class="btn-next" onclick="irABienvenida()">ACCEDER AL SISTEMA</button>
+            <div id="pin-status" class="ia-status">Identidad reconocida.</div>
+            <a id="wa-pin" class="wa-link hidden" target="_blank">SOLICITAR MI PIN</a>
+            <button id="btn-do-login" class="btn-next" onclick="irABienvenida()">ACCEDER</button>
         </div>
     </div>
 
@@ -156,7 +107,7 @@
         <h1 id="welcome-user" style="font-family:'Orbitron'; font-size: 2rem; color: var(--neon-blue); margin: 0;"></h1>
         <p id="ia-speech" style="font-size: 0.95rem; line-height: 1.6; color: #ccc; margin: 25px 0;"></p>
         <div id="admin-bday-alert" class="bday-alert">
-            <span style="color: var(--neon-purple); font-family: 'Orbitron'; font-size: 0.7rem;">🎂 ALERTA DE SISTEMA</span>
+            <span style="color: var(--neon-purple); font-family: 'Orbitron'; font-size: 0.7rem;">🎂 ALERTA</span>
             <p style="margin: 5px 0; font-weight: bold;">Hoy es el cumpleaños de Jose Baltodano.</p>
         </div>
         <button class="btn-next" style="display:block;" onclick="abrirDashboard()">INGRESAR AL PROGRAMA</button>
@@ -166,21 +117,20 @@
         <div class="header">
             <div style="font-family: 'Orbitron'; color: var(--neon-blue); border-left: 3px solid var(--neon-blue); padding-left: 15px;">
                 <span id="dash-user-name" style="font-size: 1.1rem; letter-spacing: 1px;"></span><br>
-                <span style="font-size: 0.5rem; letter-spacing: 3px; color: #555;">ADMINISTRADOR DE ENTORNO</span>
+                <span style="font-size: 0.5rem; letter-spacing: 3px; color: #555;">ADMINISTRADOR</span>
             </div>
             <button class="btn-exit" onclick="confirmarSalida()">SALIR</button>
         </div>
         <div class="grid-buttons">
-            <div class="smart-btn"><h3>EXTRACTOR DE CÓDIGO DE CAJA PARA KOHL'S</h3><p>Automatización de procesos</p></div>
-            <div class="smart-btn"><h3>QA REPORTS FOR WEEKLY ISSUES</h3><p>Control de calidad semanal</p></div>
-            <div class="smart-btn"><h3>CUMPLEAÑEROS</h3><p>Gestión de fechas especiales</p></div>
-            <div class="smart-btn"><h3>USUARIOS</h3><p>Control de accesos y perfiles</p></div>
-            <div class="smart-btn"><h3>CONFIGURACIONES</h3><p>Ajustes de IA</p></div>
+            <div class="smart-btn"><h3>EXTRACTOR KOHL'S</h3><p>Automatización</p></div>
+            <div class="smart-btn"><h3>QA REPORTS</h3><p>Auditoría</p></div>
+            <div class="smart-btn"><h3>CUMPLEAÑEROS</h3><p>Agenda</p></div>
+            <div class="smart-btn"><h3>USUARIOS</h3><p>Permisos</p></div>
+            <div class="smart-btn"><h3>CONFIGURACIONES</h3><p>Sistema</p></div>
         </div>
     </div>
 
 <script>
-    // Registro de Service Worker para permitir la instalación
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('Error SW', err));
@@ -213,19 +163,25 @@
         if(val.length > 2) {
             timing = setTimeout(() => {
                 const status = document.getElementById('user-status');
+                const btn = document.getElementById('btn-goto-pin');
+                const link = document.getElementById('wa-user');
+
                 if (Usuarios[val]) {
                     userSession = Usuarios[val];
                     userField.classList.remove('error');
                     status.innerText = "Usuario reconocido.";
                     status.style.color = "var(--neon-green)";
-                    document.getElementById('btn-goto-pin').style.display = "block";
-                    hablar(`Usuario reconocido, Jose. Presiona siguiente.`);
+                    btn.style.display = "block";
+                    link.classList.add('hidden');
+                    hablar(`Usuario reconocido. Presiona siguiente.`);
                 } else {
                     userField.classList.add('error');
                     status.innerText = "Usuario no encontrado.";
                     status.style.color = "var(--neon-red)";
-                    document.getElementById('wa-user').classList.remove('hidden');
-                    hablar("Ese usuario no existe.");
+                    btn.style.display = "none";
+                    link.classList.remove('hidden');
+                    link.href = `https://wa.me/${miWhatsapp}?text=Hola,%20necesito%20mi%20usuario.%20Intenté:%20${val}`;
+                    hablar("Usuario no existe.");
                 }
             }, 1000);
         }
@@ -234,7 +190,7 @@
     function irAPin() {
         document.getElementById('step-user').classList.add('hidden');
         document.getElementById('step-pin').classList.remove('hidden');
-        hablar("Por favor, ingresa tu PIN de acceso.");
+        hablar("Ingresa tu PIN.");
     }
 
     const pinField = document.getElementById('pin-field');
@@ -242,14 +198,24 @@
         clearTimeout(timing);
         if(pinField.value.length >= 4) {
             timing = setTimeout(() => {
+                const status = document.getElementById('pin-status');
+                const btn = document.getElementById('btn-do-login');
+                const link = document.getElementById('wa-pin');
+
                 if (pinField.value === userSession.pin) {
                     pinField.classList.remove('error');
-                    document.getElementById('pin-status').innerText = "PIN correcto.";
-                    document.getElementById('btn-do-login').style.display = "block";
+                    status.innerText = "PIN correcto.";
+                    status.style.color = "var(--neon-green)";
+                    btn.style.display = "block";
+                    link.classList.add('hidden');
                     hablar("PIN verificado.");
                 } else {
                     pinField.classList.add('error');
-                    document.getElementById('wa-pin').classList.remove('hidden');
+                    status.innerText = "PIN incorrecto.";
+                    status.style.color = "var(--neon-red)";
+                    btn.style.display = "none";
+                    link.classList.remove('hidden');
+                    link.href = `https://wa.me/${miWhatsapp}?text=Hola,%20soy%20${userSession.nombre}%20y%20necesito%20mi%20PIN.`;
                     hablar("PIN incorrecto.");
                 }
             }, 1000);
@@ -261,10 +227,10 @@
         document.getElementById('welcome-container').classList.remove('hidden');
         const pNombre = userSession.nombre.split(' ')[0];
         document.getElementById('welcome-user').innerText = `HOLA, ${pNombre.toUpperCase()}`;
-        let discurso = `Hola ${pNombre}, soy tu asistente de Inteligencia Artificial.`;
+        let discurso = `Hola ${pNombre}, soy tu asistente IA.`;
         if(userSession.rol === "Admin") {
             document.getElementById('admin-bday-alert').style.display = "block";
-            discurso += " Te informo que hoy tenemos un cumpleañero en el sistema.";
+            discurso += " Tenemos un cumpleañero hoy.";
         }
         document.getElementById('ia-speech').innerText = discurso;
         hablar(discurso);
@@ -274,20 +240,19 @@
         document.getElementById('welcome-container').classList.add('hidden');
         document.getElementById('dashboard').style.display = "flex";
         document.getElementById('dash-user-name').innerText = userSession.nombre;
-        hablar("Cargando entorno de trabajo.");
+        hablar("Entorno listo.");
     }
 
     function confirmarSalida() {
         const pNombre = userSession.nombre.split(' ')[0];
-        const despedida = `Entendido, ${pNombre}. Cerrando sesión y protegiendo el entorno. Que tengas un excelente día, nos vemos pronto.`;
+        const despedida = `Cerrando sesión, ${pNombre}. Que tengas un buen día.`;
         hablar(despedida);
         const overlay = document.createElement('div');
         overlay.className = "overlay-exit";
-        overlay.innerHTML = `<div><h2 style="color:var(--neon-blue);">CERRANDO SISTEMA...</h2><p>${despedida}</p></div>`;
+        overlay.innerHTML = `<div><h2 style="color:var(--neon-blue);">SISTEMA OFF</h2><p>${despedida}</p></div>`;
         document.body.appendChild(overlay);
-        setTimeout(() => { if(confirm("¿Deseas salir de forma segura?")) location.reload(); else document.body.removeChild(overlay); }, 3500);
+        setTimeout(() => { if(confirm("¿Salir?")) location.reload(); else document.body.removeChild(overlay); }, 3500);
     }
-
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 </script>
 </body>
