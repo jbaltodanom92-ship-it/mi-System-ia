@@ -11,170 +11,192 @@
             --text-color: #c9d1d9;
             --accent-color: #007bff;
             --error-color: #ffca28;
+            --card-bg: #161b22;
         }
 
-        body {
+        /* Centrado total en la página */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .login-container, .app-container {
-            background: #161b22;
-            padding: 25px;
+        .container {
+            background: var(--card-bg);
+            padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            width: 90%;
             max-width: 400px;
-            text-align: center;
+            text-align: center; /* Centra el contenido interno */.
         }
 
         input {
-            width: 90%;
+            width: 100%;
+            box-sizing: border-box;
             padding: 12px;
             margin: 10px 0;
             border-radius: 6px;
             border: 1px solid #30363d;
             background: #0d1117;
             color: white;
+            text-align: center;
         }
 
         button {
+            width: 100%;
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
             margin-top: 10px;
         }
-
-        button:hover { opacity: 0.8; }
 
         #asistente-texto {
             color: var(--error-color);
             font-size: 0.9em;
-            min-height: 40px;
-            margin: 10px 0;
+            margin: 15px 0;
+            min-height: 20px;
         }
 
         .btn-recuperar {
             background-color: transparent;
             color: var(--error-color);
             border: 1px solid var(--error-color);
-            font-size: 0.8em;
-            display: none;
+            font-size: 0.85em;
+            display: none; /* Se activa por JS */
+            margin: 10px auto;
         }
 
         .hidden { display: none; }
+
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            height: 100px;
+            background: #0d1117;
+            color: white;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="login-section" class="login-container">
+    <div id="login-section" class="container">
         <h2>Acceso al Sistema</h2>
-        <div id="asistente-texto">IA: Por favor, ingresa tu usuario.</div>
+        <div id="asistente-texto">IA: Esperando usuario...</div>
         
         <input type="text" id="user-input" placeholder="Nombre de Usuario" oninput="validarUsuarioRealTime(this.value)">
-        <button id="btn-recuperar-user" class="btn-recuperar" onclick="soporteWA('usuario')">Recuperar Usuario vía WhatsApp</button>
+        <button id="btn-recuperar-user" class="btn-recuperar" onclick="soporteWA('usuario')">Recuperar Usuario</button>
         
         <input type="password" id="pin-input" class="hidden" placeholder="Introduce tu PIN" oninput="validarPinRealTime(this.value)">
-        <button id="btn-recuperar-pin" class="btn-recuperar" onclick="soporteWA('PIN')">Recuperar PIN vía WhatsApp</button>
+        <button id="btn-recuperar-pin" class="btn-recuperar" onclick="soporteWA('PIN')">Recuperar PIN</button>
         
         <button id="btn-entrar" class="hidden" onclick="entrarAlPrograma()">Ingresar al Entorno</button>
     </div>
 
-    <div id="app-section" class="app-container hidden">
+    <div id="app-section" class="container hidden">
         <h2 id="welcome-msg">Bienvenido</h2>
-        <textarea id="inputCodigo" placeholder="Pega el código aquí..." style="width:100%; height:100px; background:#0d1117; color:white; border-radius:6px;"></textarea>
-        <div id="resultado" style="margin:10px; padding:10px; border:1px dashed #30363d;"></div>
+        <textarea id="inputCodigo" placeholder="Pega el código aquí..."></textarea>
+        <div id="resultado" style="margin:10px 0; padding:10px; border:1px dashed #30363d; font-size: 0.9em;"></div>
         
         <button onclick="copiarParaWhatsApp()">Copiar para WhatsApp</button>
-        <button style="background:#30363d;" onclick="location.reload()">Salir</button>
+        <button style="background:#30363d;" onclick="location.reload()">Cerrar Sesión</button>
     </div>
 
     <script>
-        // --- BASE DE DATOS Y ESTADOS ---
         const usuariosDB = {
-            "Jose Alfredo Baltodano Mora": { pin: "1234", cargo: "Admin", genero: "masculino" },
-            "QA_Auditor": { pin: "5678", cargo: "QA", genero: "femenino" }
+            "Jose Alfredo Baltodano Mora": { pin: "1234", cargo: "Admin" },
+            "QA_Auditor": { pin: "5678", cargo: "QA" }
         };
 
         let usuarioIdentificado = null;
         let timerEscritura;
         const asistente = document.getElementById('asistente-texto');
 
-        // --- LÓGICA DE VALIDACIÓN INTELIGENTE (TEXTO) ---
+        // VALIDACIÓN DE USUARIO (Corregido el "Escribiendo...")
         function validarUsuarioRealTime(valor) {
             clearTimeout(timerEscritura);
-            asistente.innerText = "IA: Escribiendo...";
+            if (valor.trim() === "") {
+                asistente.innerText = "IA: Esperando usuario...";
+                return;
+            }
+            
+            asistente.innerText = "IA: Validando...";
             
             timerEscritura = setTimeout(() => {
-                if (valor.length > 5) {
-                    if (usuariosDB[valor]) {
-                        usuarioIdentificado = valor;
-                        asistente.innerText = "IA: Usuario reconocido. Ahora ingresa tu PIN.";
-                        document.getElementById('pin-input').classList.remove('hidden');
-                        document.getElementById('btn-recuperar-user').style.display = "none";
-                    } else {
-                        asistente.innerText = "IA: Ese usuario no es correcto, revisa si hay algún error.";
-                        document.getElementById('btn-recuperar-user').style.display = "block";
-                    }
+                if (usuariosDB[valor]) {
+                    usuarioIdentificado = valor;
+                    asistente.innerText = "IA: Usuario reconocido. Introduce tu PIN.";
+                    document.getElementById('pin-input').classList.remove('hidden');
+                    document.getElementById('btn-recuperar-user').style.display = "none";
+                } else if (valor.length > 5) {
+                    asistente.innerText = "IA: Ese usuario no existe. ¿Deseas recuperarlo?";
+                    document.getElementById('btn-recuperar-user').style.display = "block";
                 }
-            }, 1000);
+            }, 800); // 800ms de espera tras dejar de escribir
         }
 
+        // VALIDACIÓN DE PIN
         function validarPinRealTime(pin) {
             clearTimeout(timerEscritura);
+            if (pin.trim() === "") return;
+
+            asistente.innerText = "IA: Verificando PIN...";
+
             timerEscritura = setTimeout(() => {
-                if (pin.length >= 4) {
-                    if (usuariosDB[usuarioIdentificado].pin === pin) {
-                        asistente.innerText = "IA: PIN correcto. Ya puedes ingresar.";
-                        document.getElementById('btn-entrar').classList.remove('hidden');
-                        document.getElementById('btn-recuperar-pin').style.display = "none";
-                    } else {
-                        asistente.innerText = "IA: El PIN es incorrecto. Inténtalo de nuevo.";
-                        document.getElementById('btn-recuperar-pin').style.display = "block";
-                    }
+                if (usuariosDB[usuarioIdentificado].pin === pin) {
+                    asistente.innerText = "IA: Todo correcto. Ya puedes entrar.";
+                    document.getElementById('btn-entrar').classList.remove('hidden');
+                    document.getElementById('btn-recuperar-pin').style.display = "none";
+                } else if (pin.length >= 4) {
+                    asistente.innerText = "IA: PIN incorrecto. Revisa o recupera tu acceso.";
+                    document.getElementById('btn-recuperar-pin').style.display = "block";
                 }
-            }, 1000);
+            }, 800);
         }
 
-        // --- FUNCIONES DE ACCIÓN ---
         function entrarAlPrograma() {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('app-section').classList.remove('hidden');
-            document.getElementById('welcome-msg').innerText = `Panel ${usuariosDB[usuarioIdentificado].cargo}: ${usuarioIdentificado}`;
+            document.getElementById('welcome-msg').innerText = `Hola, ${usuariosDB[usuarioIdentificado].cargo}`;
         }
 
         function soporteWA(tipo) {
-            const msj = `Hola Jose, se me olvidó mi ${tipo} del Extractor. ¿Me ayudas?`;
-            window.open(`https://wa.me/50588888888?text=${encodeURIComponent(msj)}`, '_blank'); // Cambia el número por el tuyo
+            const msj = `Hola Jose Alfredo, necesito ayuda con mi ${tipo} del Extractor de Código.`;
+            window.open(`https://wa.me/50588888888?text=${encodeURIComponent(msj)}`, '_blank');
         }
 
         function copiarParaWhatsApp() {
             const input = document.getElementById('inputCodigo');
             const res = document.getElementById('resultado');
-            res.innerText = "PROCESADO: " + input.value; // Aquí va tu lógica de extracción
+            
+            if (input.value.trim() === "") return;
+
+            res.innerText = "PROCESADO: " + input.value; 
 
             navigator.clipboard.writeText(res.innerText).then(() => {
-                alert("Copiado con éxito");
-                // REGLA: Limpiar tras copiar
+                alert("Copiado al portapapeles");
+                // REGLA: Limpiar campos tras la acción
                 input.value = "";
                 res.innerText = "";
             });
         }
 
-        // --- REGISTRO PWA PARA INSTALACIÓN ---
+        // REGISTRO DE SERVICE WORKER (Para instalación en celular)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js');
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
             });
         }
     </script>
