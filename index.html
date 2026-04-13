@@ -3,41 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema JB - IA Master Control</title>
+    <title>Sistema JB - IA Master Control - Extractor Fix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #02060a; --accent: #00f2ff; --win-blue: #0078d7; --card: #0d1117; --error: #ffeb3b; }
         body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; overflow: hidden; }
-        .view { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; position: absolute; transition: 0.5s ease-in-out; }
-        .hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
+        .view { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; position: absolute; transition: 0.5s Ease; }
+        .hidden { opacity: 0 !important; pointer-events: none !important; transform: translateY(20px) !important; }
+        .display-none { display: none !important; }
 
         /* LOGIN EVOLUTIVO */
-        .login-card { width: 600px; display: flex; align-items: center; gap: 30px; background: rgba(255,255,255,0.02); padding: 40px; border: 1px solid #1a2026; border-radius: 12px; box-shadow: 0 0 20px rgba(0,242,255,0.05); }
+        .login-card { width: 600px; display: flex; align-items: center; gap: 30px; background: rgba(255,255,255,0.02); padding: 40px; border: 1px solid #1a2026; border-radius: 8px; box-shadow: 0 0 20px rgba(0,242,255,0.05); }
         .avatar-frame { width: 150px; height: 150px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; overflow: hidden; }
         .avatar-frame i { font-size: 5rem; color: #1f4b5e; }
         .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* INTERFAZ WINDOWS 8 FUTURISTA */
+        /* PANEL WINDOWS 8 FUTURISTA */
         .metro-grid { display: grid; grid-template-columns: repeat(4, 160px); grid-template-rows: repeat(2, 160px); gap: 12px; }
-        .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); }
+        .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s Ease; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); }
         .tile:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: 0 0 25px var(--accent); z-index: 10; }
         .tile.wide { width: 332px; grid-column: span 2; }
         .tile span { position: absolute; bottom: 10px; left: 10px; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
 
-        /* EXTRACTOR & LOGICA DE CIRCULO */
+        /* EXTRACTOR CORE - ESTRUCTURA BLINDADA */
         .ext-container { width: 1100px; display: flex; gap: 30px; background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #1a2026; }
         .side-tools { width: 300px; display: flex; flex-direction: column; align-items: center; gap: 20px; border-right: 1px solid #30363d; padding-right: 20px; }
         
-        .progress-box { position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; }
+        /* Círculo de Progreso Laboral Pro */
+        .progress-box { position: relative; width: 190px; height: 190px; display: flex; align-items: center; justify-content: center; }
         .prog-canvas { position: absolute; transform: rotate(-90deg); }
         .time-display { text-align: center; z-index: 5; }
         .time-display .clock-num { font-size: 1.8rem; font-weight: bold; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
         .alarm-msg { font-size: 0.8rem; color: var(--error); margin-top: 5px; min-height: 20px; font-weight: bold; }
 
-        textarea { width: 100%; height: 150px; background: white; color: black; border: none; padding: 15px; font-family: 'Consolas', monospace; font-size: 1.1rem; border-radius: 4px; resize: none; }
-        .btn-win { width: 100%; padding: 15px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 1rem; }
+        /* ZONA DE TRABAJO DINÁMICA DEL EXTRACTOR */
+        .extractor-workzone { flex-grow:1; display:flex; flex-direction:column; gap:12px; }
+        textarea { width: 100%; height: 140px; background: white; color: black; border: none; padding: 15px; font-family: 'Consolas', monospace; font-size: 1rem; border-radius: 4px; resize: none; box-sizing: border-box; }
+        
+        /* RESULTADOS HORIZONTALES */
+        #txt-out { height: 60px; word-break: break-all; overflow-y: auto; color: var(--accent); background: #010409; border: 1px solid #1a2026; } 
+        
+        .btn-win { width: 100%; padding: 15px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 1rem; transition: 0.2s; }
         .btn-blue { background: #0078d7; color: white; }
+        .btn-blue:hover { background: #006cc1; }
         .btn-green { background: #238636; color: white; }
+        .btn-green:hover { background: #1e702e; }
+        .btn-gray { background: #3c4043; color: white; }
     </style>
 </head>
 <body>
@@ -66,7 +77,7 @@
             <div id="lunch-module" class="hidden" style="margin-top:25px; background: rgba(255, 235, 59, 0.1); padding: 20px; border: 1px dashed var(--error);">
                 <i class="fa-solid fa-brain"></i> IA: No he aprendido tu horario de almuerzo para esta semana. ¿A qué hora sueles irte hoy? 
                 <input type="time" id="lunch-time-input" style="padding: 5px; border-radius: 4px; border: none; margin-left: 10px;">
-                <button onclick="learnLunch()" style="padding: 5px 15px; background: var(--accent); border: none; cursor: pointer; font-weight: bold;">Enseñar a IA</button>
+                <button onclick="learnLunch()" style="padding: 5px 15px; background: var(--accent); color: black; border: none; cursor: pointer; font-weight: bold;">Enseñar a IA</button>
             </div>
             <button class="btn-win btn-blue" style="width: 250px; margin-top: 40px;" onclick="showView('v-panel')">ACCEDER AL SISTEMA</button>
         </div>
@@ -76,10 +87,10 @@
         <h2 style="font-weight: 100; font-size: 3.5rem; margin-bottom: 30px;">Panel de Control</h2>
         <div class="metro-grid">
             <div class="tile wide" style="background:#00a4ef" onclick="showView('v-ext'); initMasterEngine();">
-                <i class="fa-solid fa-code-branch"></i><span>Extractor de Códigos</span>
+                <i class="fa-solid fa-microchip"></i><span>Extractor de Códigos</span>
             </div>
             <div class="tile" style="background:#7fba00"><i class="fa-solid fa-clipboard-check"></i><span>QA Reports</span></div>
-            <div class="tile" style="background:#744da9"><i class="fa-solid fa-cake-candles"></i><span>Cumpleaños</span></div>
+            <div class="tile" style="background:#744da9"><i class="fa-solid fa-cake-candles"></i><span>Cumpleañeros</span></div>
             <div class="tile" style="background:#ffb900"><i class="fa-solid fa-users-gear"></i><span>Gestión</span></div>
             <div class="tile" style="background:#f25022" onclick="location.reload()"><i class="fa-solid fa-power-off"></i><span>Cerrar</span></div>
         </div>
@@ -89,21 +100,28 @@
         <div class="ext-container">
             <div class="side-tools">
                 <div class="progress-box">
-                    <canvas id="progCanvas" width="200" height="200" class="prog-canvas"></canvas>
+                    <canvas id="progCanvas" width="190" height="190" class="prog-canvas"></canvas>
                     <div class="time-display">
                         <div id="d-time" class="clock-num">00:00:00</div>
                         <div id="alarm-txt" class="alarm-msg"></div>
                     </div>
                 </div>
                 <div id="cal-box" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; width:100%;"></div>
-                <button class="btn-win" style="background:#3c4043;" onclick="showView('v-panel')">Volver</button>
+                <button class="btn-win btn-gray" onclick="showView('v-panel')">Volver</button>
             </div>
-            <div style="flex-grow:1; display:flex; flex-direction:column; gap:12px;">
-                <h3 style="color:var(--accent); margin:0;">Herramienta de Extracción Blindada</h3>
-                <textarea id="raw-in" placeholder="Pegue la lista de códigos aquí..."></textarea>
-                <button class="btn-win btn-blue" onclick="runExtraction()">EXTRAER ÚLTIMOS 8 DÍGITOS</button>
-                <textarea id="raw-out" readonly placeholder="Resultados listos para copiar..."></textarea>
-                <button class="btn-win btn-green" onclick="copyResult()"><i class="fa-brands fa-whatsapp"></i> COPIAR Y LIMPIAR</button>
+
+            <div class="extractor-workzone">
+                <h3 style="color:var(--accent); margin:0;">Herramienta de Extracción Blindada de Kohl's</h3>
+                
+                <textarea id="txt-in" placeholder="Pega los códigos de Kohl's aquí..." oninput="checkInput()"></textarea>
+                
+                <button id="btn-extract-dynamic" class="btn-win btn-blue hidden display-none" onclick="processExtraction()">EXTRAER ÚLTIMOS 8 DÍGITOS</button>
+                
+                <div id="results-group" class="hidden display-none" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+                    <p style="color:var(--accent); font-size:0.85rem; margin:0;">Códigos Procesados Horizontales:</p>
+                    <textarea id="txt-out" readonly placeholder="Resultados listos para copiar en WhatsApp..."></textarea>
+                    <button class="btn-win btn-green" onclick="copyResultGroup()"><i class="fa-brands fa-whatsapp"></i> COPIAR Y LIMPIAR TODO</button>
+                </div>
             </div>
         </div>
     </div>
@@ -143,7 +161,6 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // --- LÓGICA DE APRENDIZAJE IA Y CALENDARIO ---
         function getWeek() {
             const d = new Date();
             const start = new Date(d.getFullYear(), 0, 1);
@@ -157,13 +174,13 @@
             const lunchMod = document.getElementById('lunch-module');
             const weekKey = `lunch_${user}_W${getWeek()}`;
 
-            // 1. Verificación de Cumpleaños (Ejemplo con Hilda)
+            // Verificación de Cumpleaños y Días (Lunes-Viernes)
             if(now.getMonth() === 1 && now.getDate() === 27) report.innerHTML = "IA: ¡Hoy es el cumpleaños de tu madre Hilda! No olvides felicitarla.";
-            else if(day === 0) report.innerHTML = "IA: Domingo detectado. Modo descanso total activo. Disfruta con Fabiana y tu hija.";
+            else if(day === 0) report.innerHTML = "IA: Domingo detectado. Descanso total activo. Disfruta con Fabiana y tu hija.";
             else if(day === 6) report.innerHTML = "IA: Sábado activo. Jornada corta de trabajo. ¡Buen provecho!";
-            else report.innerHTML = "IA: Jornada laboral estándar. Listos para extraer códigos.";
+            else report.innerHTML = "IA: Jornada laboral estándar. Listos para extraer códigos de Kohl's.";
 
-            // 2. Aprendizaje de Almuerzo por Usuario
+            // Aprendizaje de Almuerzo por Usuario
             if(day !== 0 && day !== 6) {
                 if(!localStorage.getItem(weekKey)) lunchMod.classList.remove('hidden');
             }
@@ -178,7 +195,7 @@
             }
         }
 
-        // --- MOTOR DEL EXTRACTOR Y PROGRESO LABORAL ---
+        // --- MOTOR DEL EXTRACTOR, RELOJ Y ALARMAS BLINDADO ---
         function initMasterEngine() {
             initCalendar();
             const canvas = document.getElementById('progCanvas');
@@ -190,13 +207,13 @@
                 const day = now.getDay();
                 document.getElementById('d-time').innerText = now.toLocaleTimeString();
 
-                // Definición de Horarios Laborales
-                let start = 7, end = 17; // Lunes y Viernes
-                if(day >= 2 && day <= 4) end = 18; // Martes a Jueves
+                // Definición de Horarios Laborales (Blindado)
+                let start = 7, end = 17; // Lunes y Viernes (7am-5pm)
+                if(day >= 2 && day <= 4) end = 18; // Martes a Jueves (7am-6pm)
 
-                // Dibujo de Círculo
-                ctx.clearRect(0,0,200,200);
-                ctx.beginPath(); ctx.arc(100,100,90,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=12; ctx.stroke();
+                // Dibujo de Círculo (Progreso Pro)
+                ctx.clearRect(0,0,190,190);
+                ctx.beginPath(); ctx.arc(95,95,90,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=10; ctx.stroke();
                 
                 let progress = 0;
                 if(h >= start && h < end) {
@@ -205,7 +222,7 @@
                     progress = elapsed / totalSecs;
                 } else if(h >= end) progress = 1;
 
-                ctx.beginPath(); ctx.arc(100,100,90,0,progress*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=12; ctx.stroke();
+                ctx.beginPath(); ctx.arc(95,95,90,0,progress*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=10; ctx.stroke();
 
                 // Alarmas Inteligentes
                 const alarm = document.getElementById('alarm-txt');
@@ -218,25 +235,53 @@
             }, 1000);
         }
 
-        // LÓGICA DE EXTRACCIÓN (8 CARACTERES)
-        function runExtraction() {
-            const val = document.getElementById('raw-in').value.split('\n');
-            const result = val.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
-            document.getElementById('raw-out').value = result.join('\n');
+        // --- LÓGICA DINÁMICA DEL EXTRACTOR (CORREGIDO) ---
+        function checkInput() {
+            const inputVal = document.getElementById('txt-in').value.trim();
+            const btn = document.getElementById('btn-extract-dynamic');
+            
+            // Si hay texto, muestra el botón azul. Si no, lo oculta.
+            if(inputVal.length > 0) {
+                btn.classList.remove('hidden', 'display-none');
+            } else {
+                btn.classList.add('hidden', 'display-none');
+                hideResultsGroup(); // Oculta resultados si se borra la entrada
+            }
         }
 
-        function copyResult() {
-            const out = document.getElementById('raw-out');
-            navigator.clipboard.writeText(out.value.replace(/\n/g, ' '));
-            document.getElementById('raw-in').value = "";
-            out.value = "";
+        function processExtraction() {
+            const rawVal = document.getElementById('txt-in').value.split('\n');
+            const outputArea = document.getElementById('txt-out');
+            
+            // LÓGICA BLINDADA: Extraer solo los últimos 8 dígitos
+            // LÓGICA HORIZONTAL: Unir con espacios
+            const result = rawVal.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
+            outputArea.value = result.join(' '); // AHORA ES HORIZONTAL
+            
+            // Muestra el grupo de resultados
+            document.getElementById('results-group').classList.remove('hidden', 'display-none');
+        }
+
+        function copyResultGroup() {
+            const outArea = document.getElementById('txt-out');
+            navigator.clipboard.writeText(outArea.value); // Copia el formato horizontal
+            
+            // Limpiar y resetear el flujo
+            document.getElementById('txt-in').value = "";
+            hideResultsGroup();
+            checkInput(); // Oculta botón azul
+        }
+
+        function hideResultsGroup() {
+            document.getElementById('txt-out').value = "";
+            document.getElementById('results-group').classList.add('hidden', 'display-none');
         }
 
         function initCalendar() {
             const d = new Date();
             document.getElementById('cal-box').innerHTML = `<div style="text-align:center;color:var(--accent);font-weight:bold;margin-bottom:10px;">${d.toLocaleString('es', {month:'long'})} 2026</div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:0.8rem;">` + 
             "DLMMJVS".split('').map(l => `<span>${l}</span>`).join('') + 
-            Array.from({length:30}, (_,i) => `<span style="${i+1===d.getDate()?'color:var(--accent);font-weight:bold;border:1px solid var(--accent)':''}">${i+1}</span>`).join('') + "</div>";
+            Array.from({length:30}, (_,i) => `<span style="${i+1===d.getDate()?'color:var(--accent);font-weight:bold;border:1px solid var(--accent);border-radius:50%;':''}">${i+1}</span>`).join('') + "</div>";
         }
     </script>
 </body>
