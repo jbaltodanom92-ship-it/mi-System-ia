@@ -176,7 +176,7 @@
     document.getElementById('menu-pestañas').classList.add('hidden');
     document.getElementById('entorno-trabajo').classList.remove('hidden');
     document.getElementById('workspace-name').innerText = nombre;
-    
+
     const panel = document.getElementById('contenido-herramienta');
     panel.innerHTML = ""; // Limpiamos lo que sea que estuviera antes
 
@@ -187,10 +187,40 @@
                 <p><strong>Gestión de Personal</strong></p>
                 <div style="border-bottom: 1px solid #333; padding: 5px 0;">👤 Jose Alfredo (Admin)</div>
                 <div style="border-bottom: 1px solid #333; padding: 5px 0;">👤 QA_Auditor (Auditor)</div>
-                <button onclick="alert('Función para añadir usuario en desarrollo')" style="font-size: 0.8rem; margin-top: 10px; background: #238636;">+ Agregar Nuevo Usuario</button>
-            </div>
-        `;
+                <button onclick="alert('Función en desarrollo')" style="font-size: 0.8rem; margin-top: 10px; background: #238636;">+ Agregar Nuevo Usuario</button>
+            </div>`;
     } 
+    else if (nombre === "Extractor de Codigo de Caja para Kohl's") {
+        // --- DISEÑO ÚNICO PARA KOHL'S (RELOJES + EXTRACTOR) ---
+        panel.innerHTML = `
+            <div class="stats-container" style="display: flex; justify-content: space-around; margin-bottom: 20px;">
+                <div class="progress-box">
+                    <svg width="80" height="80"><circle class="bg-circle" cx="40" cy="40" r="35"></circle>
+                    <circle id="circle-dia" class="fg-circle" cx="40" cy="40" r="35"></circle></svg>
+                    <div class="percentage-text" id="txt-dia" style="position: absolute; top: 25px; left: 25px; font-size: 0.7rem;">0%</div>
+                    <div style="font-size: 0.6rem; color: #8b949e;">Día</div>
+                </div>
+                <div class="progress-box">
+                    <svg width="80" height="80"><circle class="bg-circle" cx="40" cy="40" r="35"></circle>
+                    <circle id="circle-jornada" class="fg-circle" cx="40" cy="40" r="35" style="stroke: #ffca28;"></circle></svg>
+                    <div class="percentage-text" id="txt-jornada" style="position: absolute; top: 25px; left: 25px; font-size: 0.7rem;">0%</div>
+                    <div style="font-size: 0.6rem; color: #8b949e;">Jornada</div>
+                </div>
+            </div>
+
+            <textarea id="inputCodigo" placeholder="Escribe códigos aquí..." oninput="controlarBotonExtraer(this.value)" 
+                style="width:100%; height:80px; background:#0d1117; color:white; border:1px solid #333; border-radius:8px; padding:10px;"></textarea>
+            
+            <button id="btn-extraer" class="hidden" onclick="procesarCodigos()" style="background: #238636;">Extraer</button>
+
+            <div id="cuadro-resultado" class="hidden" style="margin-top:15px; background: #0d1117; border: 1px solid #00f2ff; padding:10px; border-radius:8px; text-align:left;">
+                <div id="lista-codigos" style="font-family: monospace; font-size: 0.9rem;"></div>
+                <button onclick="copiarYLimpiarTodo()" style="margin-top:10px; font-size:0.8rem;">Copiar y Limpiar</button>
+            </div>`;
+        
+        iniciarContadoresCirculares(); // Activa los círculos
+    }
+}
     else if (nombre === "Extractor de Codigo de Caja para Kohl's") {
         // --- DISEÑO ÚNICO PARA EL EXTRACTOR ---
         panel.innerHTML = `
