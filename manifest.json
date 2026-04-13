@@ -1,11 +1,12 @@
 {
   "name": "Extractor Profesional de Código",
   "short_name": "ExtractorCode",
-  "description": "Aplicación técnica para administración y extracción de códigos",
-  "start_url": "./index.html",
+  "description": "Sistema de Gestión y Extracción - Jose Alfredo Baltodano",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0d1117",
   "theme_color": "#007bff",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
