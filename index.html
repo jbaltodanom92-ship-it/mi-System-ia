@@ -19,8 +19,7 @@
             border: 1px solid #30363d;
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
-        /* Ajuste para que el entorno de trabajo sea más ancho por el reloj */
-        #entorno-trabajo { max-width: 800px; }
+        #entorno-trabajo { max-width: 850px; }
 
         .grid-container {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -99,7 +98,6 @@
         let userActivo = "";
         const asis = document.getElementById('asistente-ia');
 
-        // --- FUNCIONES DE LOGIN ---
         function validarUser(val) {
             if(db[val]) {
                 userActivo = val;
@@ -149,7 +147,6 @@
             }
         }
 
-        // --- INTERFAZ DE TRABAJO (EXTRACTOR + RELOJ) ---
         function abrirHerramienta(nombre) {
             document.getElementById('menu-pestañas').classList.add('hidden');
             document.getElementById('entorno-trabajo').classList.remove('hidden');
@@ -159,39 +156,38 @@
             if (nombre.includes("Extractor")) {
                 panel.innerHTML = `
                     <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; text-align: left;">
-                        <div style="flex: 1; min-width: 200px; border-right: 1px solid #333; padding-right: 15px;">
+                        <div style="flex: 1; min-width: 220px; border-right: 1px solid #333; padding-right: 15px;">
                             <div style="position: relative; width: 120px; height: 120px; margin: auto;">
                                 <canvas id="canvasReloj" width="120" height="120"></canvas>
                                 <div id="hora-digital" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.8rem; color: var(--futuristic);"></div>
                             </div>
                             <div id="calendario-mini" style="margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                                <div style="color: var(--futuristic); font-size: 0.8rem; margin-bottom: 5px;">Abril 2026</div>
+                                <div style="color: var(--futuristic); font-size: 0.8rem; margin-bottom: 5px; text-align:center;">Abril 2026</div>
                                 <div style="display: grid; grid-template-columns: repeat(7, 1fr); font-size: 0.6rem; text-align: center; gap: 3px;">
                                     <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
                                     ${generarDiasCalendario(13)}
                                 </div>
                             </div>
                         </div>
-                        <div style="flex: 2; min-width: 250px;">
-                            <textarea id="inputCodigo" placeholder="Pega Código Aquí" oninput="verificarContenido()" style="height: 100px;"></textarea>
+                        <div style="flex: 2; min-width: 280px;">
+                            <textarea id="inputCodigo" placeholder="Pega Código Aquí" oninput="verificarContenido()" style="height: 120px;"></textarea>
                             <button id="btn-extraer" class="hidden" onclick="procesarCodigo()">Extraer Código</button>
                             <div id="seccion-resultados" class="hidden">
-                                <p style="font-size: 0.8rem; color: var(--futuristic); margin: 10px 0 5px;">Resultados:</p>
-                                <textarea id="outputResultados" readonly style="height: 80px; background: #161b22; color: #aff5b4; border-color: #238636;"></textarea>
-                                <button onclick="copiarYLimpiar()" style="background: #238636;">Copiar para WhatsApp</button>
+                                <p style="font-size: 0.8rem; color: var(--futuristic); margin: 15px 0 5px;">Resultados:</p>
+                                <textarea id="outputResultados" readonly style="height: 100px; background: #161b22; color: #aff5b4; border-color: #238636;"></textarea>
+                                <button onclick="copiarYLimpiar()" style="background: #238636;"><i class="fa-brands fa-whatsapp"></i> Copiar para WhatsApp</button>
                             </div>
                         </div>
                     </div>
                 `;
-                iniciarRelojProgresivo();
+                setTimeout(iniciarRelojProgresivo, 100);
             } else if (nombre === "Usuarios") {
-                panel.innerHTML = `<div style="text-align:left;">👤 Jose Alfredo (Admin)<br>👤 QA_Auditor (Auditor)</div>`;
+                panel.innerHTML = `<div style="text-align:left;">👤 Jose Alfredo Baltodano (Admin)<br>👤 QA_Auditor (Auditor)</div>`;
             } else {
                 panel.innerHTML = `<p>Módulo de ${nombre} en desarrollo...</p>`;
             }
         }
 
-        // --- LÓGICA DE HERRAMIENTA ---
         function verificarContenido() {
             const input = document.getElementById('inputCodigo');
             const btn = document.getElementById('btn-extraer');
@@ -200,14 +196,15 @@
 
         function procesarCodigo() {
             const input = document.getElementById('inputCodigo').value;
-            document.getElementById('outputResultados').value = "CÓDIGO EXTRAÍDO: " + input.substring(0, 20) + "...";
+            // Aquí puedes poner tu lógica real de extracción
+            document.getElementById('outputResultados').value = "EXTRACCIÓN EXITOSA:\n" + input;
             document.getElementById('seccion-resultados').classList.remove('hidden');
         }
 
         function copiarYLimpiar() {
             const out = document.getElementById('outputResultados');
             navigator.clipboard.writeText(out.value).then(() => {
-                alert("Copiado al portapapeles");
+                alert("Copiado al portapapeles con éxito");
                 document.getElementById('inputCodigo').value = "";
                 document.getElementById('seccion-resultados').classList.add('hidden');
                 document.getElementById('btn-extraer').classList.add('hidden');
@@ -219,7 +216,6 @@
             document.getElementById('menu-pestañas').classList.remove('hidden');
         }
 
-        // --- FUNCIONES DE SOPORTE (RELOJ, VOZ, CALENDARIO) ---
         function generarDiasCalendario(diaActual) {
             let html = "";
             for(let i=1; i<=30; i++) {
@@ -237,17 +233,17 @@
             setInterval(() => {
                 const ahora = new Date();
                 ctxR.clearRect(0, 0, 120, 120);
-                // Círculo fondo
+                // Círculo base
                 ctxR.beginPath(); ctxR.arc(60, 60, 50, 0, 2 * Math.PI);
                 ctxR.strokeStyle = "#161b22"; ctxR.lineWidth = 8; ctxR.stroke();
-                // Progreso (8am - 5pm)
+                // Progreso Jornada (8am - 5pm)
                 let pct = (ahora.getHours() - 8) / 9; 
                 pct = Math.min(Math.max(pct, 0), 1);
                 ctxR.beginPath(); ctxR.arc(60, 60, 50, -Math.PI/2, (-Math.PI/2) + (2 * Math.PI * pct));
                 ctxR.strokeStyle = "#00f2ff"; ctxR.stroke();
                 document.getElementById('hora-digital').innerText = ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 
-                // Alarma de ejemplo (15 min antes de las 5pm)
+                // Alarma Voz (15 min antes de salir)
                 if(ahora.getHours() === 16 && ahora.getMinutes() === 45) {
                     hablar("Atención Jose, faltan quince minutos para finalizar la jornada. Ve guardando tu progreso.");
                 }
@@ -256,18 +252,12 @@
 
         function hablar(mensaje) {
             const synth = window.speechSynthesis;
-            const ejecutarHabla = () => {
-                const utterance = new SpeechSynthesisUtterance(mensaje);
-                const voices = synth.getVoices();
-                let vozFemenina = voices.find(v => v.lang.includes("es") && !v.name.toLowerCase().includes("male"));
-                utterance.voice = vozFemenina || voices[0];
-                synth.speak(utterance);
-            };
-            if (synth.getVoices().length !== 0) ejecutarHabla();
-            else synth.onvoiceschanged = ejecutarHabla;
+            const utterance = new SpeechSynthesisUtterance(mensaje);
+            utterance.lang = 'es-MX';
+            synth.speak(utterance);
         }
 
-        // --- FONDO DE PARTÍCULAS ---
+        // --- FONDO ANIMADO ---
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -286,7 +276,7 @@
                 if (this.x > canvas.width || this.x < 0 || this.y > canvas.height || this.y < 0) this.init();
             }
             draw() {
-                ctx.fillStyle = "rgba(0, 242, 255, 0.5)";
+                ctx.fillStyle = "rgba(0, 242, 255, 0.4)";
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
