@@ -278,4 +278,70 @@ if ('serviceWorker' in navigator) {
         }
     </script>
 </body>
+    <canvas id="canvas" style="position: fixed; top: 0; left: 0; z-index: -1; background: #0a1929;"></canvas>
+
+    ```
+
+### 2. Ajuste en el Script
+El código que pusiste está excelente. Solo asegúrate de que esté dentro del bloque `<script>`, tal como indicaste con la flecha:
+
+```javascript
+    // ... tu código anterior de PWA ...
+
+    // --- CÓDIGO DEL FONDO FUTURISTA ---
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Función para ajustar el tamaño si cambias el tamaño de la ventana
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width) this.x = 0;
+            if (this.x < 0) this.x = canvas.width;
+            if (this.y > canvas.height) this.y = 0;
+            if (this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = '#00f2ff';
+            ctx.shadowBlur = 5; // Un pequeño brillo neón
+            ctx.shadowColor = '#00f2ff';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function init() {
+        particles = [];
+        for (let i = 0; i < 80; i++) particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+    init();
+    animate();
+</script>
 </html>
