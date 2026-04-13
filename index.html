@@ -8,53 +8,55 @@
     <style>
         :root { --bg: #03080f; --card: rgba(13, 17, 23, 0.98); --accent: #00f2ff; --text: #c9d1d9; --panel: #161b22; }
         body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; }
-        
         #canvasMatrix { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
 
         .app-container {
-            width: 95%; max-width: 1150px; height: 90vh;
+            width: 95%; max-width: 1200px; height: 90vh;
             background: var(--card); backdrop-filter: blur(15px);
             border: 1px solid #30363d; border-radius: 15px;
             position: relative; z-index: 10; display: flex; flex-direction: column; overflow: hidden;
             box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
         }
 
-        /* LOGIN HORIZONTAL AUTOMATIZADO */
-        #sec-login { display: flex; flex-direction: row; align-items: center; justify-content: center; height: 100%; gap: 30px; padding: 40px; }
-        .login-box { text-align: left; }
-        .asis-box { font-style: italic; color: var(--accent); margin-bottom: 20px; font-size: 1.1rem; min-height: 1.5em; text-shadow: 0 0 8px var(--accent); }
-        .login-input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; width: 350px; font-size: 1.1rem; outline: none; transition: 0.3s; }
-        .login-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        /* LOGIN HORIZONTAL CON IA Y RECUPERACIÓN CORREGIDA */
+        #sec-login { display: flex; flex-direction: row; align-items: center; justify-content: center; height: 100%; gap: 50px; padding: 40px; }
+        .login-box { display: flex; flex-direction: column; gap: 15px; }
+        .asis-box { font-style: italic; color: var(--accent); min-height: 1.5em; text-shadow: 0 0 8px var(--accent); }
+        .login-input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; width: 380px; font-size: 1.1rem; outline: none; transition: 0.3s; }
+        .login-input.error { border-color: #ff4b4b; box-shadow: 0 0 10px rgba(255, 75, 75, 0.3); }
+        .forgot-link { color: #8b949e; font-size: 0.85rem; cursor: pointer; text-decoration: underline; margin-top: 5px; }
 
-        /* BIENVENIDA CON IA */
-        #sec-welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 40px; }
-        .welcome-content { animation: slideUp 1s ease; max-width: 600px; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .bday-alert { margin: 20px 0; padding: 15px; border-radius: 8px; background: rgba(0, 242, 255, 0.1); border: 1px border var(--accent); color: var(--accent); font-weight: bold; }
+        /* BIENVENIDA E IA */
+        #sec-welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+        .bday-alert { margin: 20px 0; padding: 15px; border-radius: 8px; background: rgba(0, 242, 255, 0.1); border: 1px solid var(--accent); color: var(--accent); }
 
-        /* PANEL HORIZONTAL (WINDOWS 8.1) */
-        .grid-mosaic { display: flex; flex-direction: row; flex-wrap: wrap; gap: 15px; padding: 30px; justify-content: center; width: 100%; }
+        /* PANEL DE TRABAJO HORIZONTAL */
+        .grid-mosaic { display: flex; flex-direction: row; flex-wrap: wrap; gap: 15px; padding: 30px; justify-content: flex-start; overflow-y: auto; }
         .tile { 
-            background: var(--panel); border-left: 5px solid var(--accent); flex: 1 1 320px; 
-            min-height: 110px; padding: 25px; cursor: pointer; transition: 0.2s; 
+            background: var(--panel); border-left: 5px solid var(--accent); flex: 1 1 calc(33.33% - 20px); 
+            min-height: 120px; padding: 25px; cursor: pointer; transition: 0.2s; 
             display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .tile:hover { transform: scale(1.02); background: #1c2128; box-shadow: 0 0 25px var(--accent); }
         .tile i { font-size: 2.2rem; color: var(--accent); }
         .tile span { font-size: 1.1rem; font-weight: bold; color: #fff; }
 
-        /* EXTRACTOR */
-        .layout-extractor { display: grid; grid-template-columns: 280px 1fr; gap: 30px; padding: 30px; height: 100%; }
-        .wrapper-reloj { position: relative; width: 180px; height: 180px; margin-bottom: 15px; }
-        #hora-digital { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--accent); font-weight: bold; font-size: 1.4rem; font-family: monospace; }
+        /* EXTRACTOR HORIZONTAL MEJORADO */
+        .layout-extractor { display: flex; flex-direction: row; gap: 30px; padding: 30px; height: 100%; }
+        .side-tools { width: 300px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .main-work-area { flex-grow: 1; display: flex; flex-direction: column; gap: 20px; }
+        
+        .wrapper-reloj { position: relative; width: 180px; height: 180px; }
+        #hora-digital { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--accent); font-weight: bold; font-size: 1.4rem; }
         #calendario-box { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border: 1px solid #333; display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 0.75rem; width: 100%; }
         .dia-actual { background: var(--accent); color: #000; border-radius: 50%; font-weight: bold; text-align: center; }
-        #outputRes { width: 100%; min-height: 150px; padding: 20px; border-radius: 10px; border: 1px solid #238636; background: #010409; display: flex; flex-wrap: wrap; gap: 10px; overflow-y: auto; }
-        .codigo-tag { background: rgba(35, 134, 54, 0.25); border: 1px solid #238636; padding: 6px 14px; border-radius: 6px; color: #aff5b4; font-family: monospace; }
 
-        button { background: #007bff; color: white; border: none; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: 0.3s; width: 280px; }
-        button:hover { filter: brightness(1.2); transform: translateY(-2px); }
-        .btn-success { background: #238636; width: auto; }
+        textarea { width: 100%; height: 180px; background: #0d1117; border: 1px solid #30363d; color: var(--accent); padding: 20px; border-radius: 10px; resize: none; font-size: 1rem; font-family: monospace; box-sizing: border-box; }
+        #outputRes { width: 100%; min-height: 120px; padding: 20px; border-radius: 10px; border: 1px solid #238636; background: #010409; display: flex; flex-wrap: wrap; gap: 10px; box-sizing: border-box; overflow-y: auto; }
+        .codigo-tag { background: rgba(35, 134, 54, 0.2); border: 1px solid #238636; padding: 6px 12px; border-radius: 5px; color: #aff5b4; font-family: monospace; }
+
+        button { background: #007bff; color: white; border: none; padding: 16px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: 0.3s; width: 100%; }
+        .btn-success { background: #238636; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -63,53 +65,47 @@
     <canvas id="canvasMatrix"></canvas>
 
     <div class="app-container">
-        
         <div id="sec-login">
+            <i class="fa-solid fa-user-gear" style="font-size: 6rem; color: var(--accent); opacity: 0.2;"></i>
             <div class="login-box">
-                <h2 style="color: var(--accent); margin: 0 0 10px 0; letter-spacing: 2px;">IDENTIFICACIÓN DE SEGURIDAD</h2>
-                <div id="asis-msg" class="asis-box">IA: Por favor, ingrese sus credenciales para iniciar.</div>
-                <div id="input-container">
-                    <input type="text" id="user-in" class="login-input" placeholder="Usuario" oninput="autoCheckUser(this.value)">
-                    <input type="password" id="pin-in" class="login-input hidden" placeholder="PIN de Seguridad" oninput="autoCheckPin(this.value)">
-                </div>
+                <h2 style="color: var(--accent); margin: 0;">SISTEMA DE SEGURIDAD</h2>
+                <div id="asis-msg" class="asis-box">IA: Ingrese su identificación.</div>
+                <input type="text" id="user-in" class="login-input" placeholder="Usuario" onblur="validateUser(this.value)">
+                <input type="password" id="pin-in" class="login-input hidden" placeholder="PIN de Seguridad" oninput="autoCheckPin(this.value)">
+                <div class="forgot-link" onclick="recoverAccess()">¿Olvidó sus datos? Contactar a Informática</div>
             </div>
-            <i class="fa-solid fa-shield-halved" style="font-size: 5rem; color: #161b22;"></i>
         </div>
 
         <div id="sec-welcome" class="hidden">
-            <div class="welcome-content">
-                <h1 style="color: #fff; margin-bottom: 10px;">¡Hola de nuevo, Jose Alfredo!</h1>
-                <p id="ia-greeting" style="color: var(--text); font-size: 1.1rem;">IA: Analizando estado del sistema y eventos del día...</p>
-                <div id="bday-box" class="bday-alert hidden"></div>
-                <button onclick="smartRedirect()" style="background: var(--accent); color: #000; margin-top: 30px;">
-                    <i class="fa-solid fa-rocket"></i> Manos a la obra
-                </button>
-            </div>
+            <h1 style="color: #fff;">¡Hola de nuevo, Jose Alfredo!</h1>
+            <p id="ia-status" style="color: var(--text);">IA: Analizando accesos...</p>
+            <div id="bday-box" class="bday-alert hidden"></div>
+            <button onclick="smartEntry()" style="background: var(--accent); color: #000; width: 300px; margin-top: 20px;">Manos a la obra</button>
         </div>
 
         <div id="sec-panel" class="hidden">
-            <h3 style="color: var(--accent); padding-left: 40px; margin-top:40px;">PANEL DE TRABAJO</h3>
-            <div id="panel-grid" class="grid-mosaic">
-                </div>
-            <div style="padding: 40px;"><button style="background:#30363d; width: 200px;" onclick="location.reload()">Salir</button></div>
+            <h3 style="color: var(--accent); padding: 30px 0 0 40px; margin: 0;">PANEL DE CONTROL</h3>
+            <div id="grid-panel" class="grid-mosaic"></div>
+            <div style="padding: 30px 40px;"><button style="background:#30363d; width: 200px;" onclick="location.reload()">Cerrar Sesión</button></div>
         </div>
 
         <div id="sec-extractor" class="hidden">
             <div class="layout-extractor">
-                <div class="col-sidebar">
+                <div class="side-tools">
                     <div class="wrapper-reloj">
                         <canvas id="canvasReloj" width="180" height="180"></canvas>
                         <div id="hora-digital">00:00:00</div>
                     </div>
                     <div id="calendario-box"></div>
-                    <button style="background:#30363d; width: 100%;" onclick="backToMenu()">Volver</button>
+                    <button style="background:#30363d;" onclick="backMenu()">Volver al Panel</button>
                 </div>
-                <div class="col-main">
-                    <textarea id="inputCod" placeholder="Pega los códigos de Kohl's aquí..." oninput="toggleExtBtn()"></textarea>
-                    <button id="btn-ext" class="hidden" onclick="doExtract()">Extraer Códigos</button>
-                    <div id="res-box" class="hidden">
+                <div class="main-work-area">
+                    <h3 style="color: var(--accent); margin: 0;">Extractor de Código Kohl's</h3>
+                    <textarea id="inputCod" placeholder="Pega los códigos de Kohl's aquí..." oninput="showExtBtn()"></textarea>
+                    <button id="btn-ext" class="hidden" onclick="processCodes()">Extraer Códigos (8 Dígitos)</button>
+                    <div id="res-area" class="hidden">
                         <div id="outputRes"></div>
-                        <button class="btn-success" onclick="copyClear()"><i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar</button>
+                        <button class="btn-success" onclick="copyClear()"><i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar Todo</button>
                     </div>
                 </div>
             </div>
@@ -117,104 +113,98 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE USUARIO Y PERMISOS
-        const currentUser = {
-            name: "Jose Alfredo",
-            permisos: ["extractor", "qa", "cumples", "usuarios", "config"], // Simulación de múltiples permisos
-            checkBirthdays: true
-        };
+        const userPermisos = ["extractor", "qa", "cumples", "usuarios", "config"]; 
 
-        // LOGIN IA AUTOMATIZADO
-        function autoCheckUser(v) {
-            if(v === "JBaltodano_Admin") {
-                document.getElementById('asis-msg').innerText = "IA: Usuario reconocido. Ingrese su PIN.";
-                document.getElementById('user-in').classList.add('hidden');
+        function validateUser(val) {
+            const input = document.getElementById('user-in');
+            if(val === "JBaltodano_Admin") {
+                document.getElementById('asis-msg').innerText = "IA: Usuario correcto. Ingrese PIN.";
+                input.classList.add('hidden');
                 document.getElementById('pin-in').classList.remove('hidden');
                 document.getElementById('pin-in').focus();
+            } else if(val !== "") {
+                document.getElementById('asis-msg').innerText = "IA: Usuario incorrecto.";
+                input.classList.add('error');
             }
         }
 
         function autoCheckPin(v) {
             if(v === "404471") {
                 document.getElementById('sec-login').classList.add('hidden');
-                initWelcome();
+                showWelcome();
             }
         }
 
-        // BIENVENIDA E IA DE CUMPLEAÑOS
-        function initWelcome() {
+        function recoverAccess() {
+            // NÚMERO ACTUALIZADO: 0050584386180
+            window.open("https://wa.me/50584386180?text=Solicito%20soporte%20informático%20para%20recuperar%20mi%20acceso");
+        }
+
+        function showWelcome() {
             document.getElementById('sec-welcome').classList.remove('hidden');
-            const bdayBox = document.getElementById('bday-box');
-            
-            // Lógica IA de cumpleaños (Simulada para hoy 13 de Abril)
             const hoy = new Date();
-            const esHoy = (hoy.getMonth() === 3 && hoy.getDate() === 13); 
-            
+            const esHoy = (hoy.getMonth() === 3 && hoy.getDate() === 13);
             setTimeout(() => {
-                document.getElementById('ia-greeting').innerText = "IA: He revisado la base de datos. Todo está listo para comenzar.";
-                if(currentUser.permisos.includes("cumples")) {
-                    bdayBox.classList.remove('hidden');
-                    bdayBox.innerHTML = esHoy ? 
-                        "<i class='fa-solid fa-cake-candles'></i> IA: ¡Atención! Hay compañeros de cumpleaños hoy." : 
-                        "<i class='fa-solid fa-calendar-check'></i> IA: No se detectan cumpleaños para el día de hoy.";
+                document.getElementById('ia-status').innerText = "IA: Verificando agenda del día...";
+                if(userPermisos.includes("cumples")) {
+                    const bBox = document.getElementById('bday-box');
+                    bBox.classList.remove('hidden');
+                    bBox.innerHTML = esHoy ? "IA: ¡Atención! Se detectan cumpleaños hoy." : "IA: Sin cumpleaños registrados hoy.";
                 }
             }, 1000);
         }
 
-        // REDIRECCIÓN INTELIGENTE
-        function smartRedirect() {
+        function smartEntry() {
             document.getElementById('sec-welcome').classList.add('hidden');
-            if(currentUser.permisos.length === 1) {
-                // Si solo tiene un permiso, va directo a esa ventana
-                if(currentUser.permisos[0] === "extractor") openExtractor();
+            if(userPermisos.length === 1 && userPermisos[0] === "extractor") {
+                openExtractor();
             } else {
-                renderPanel();
+                loadPanel();
                 document.getElementById('sec-panel').classList.remove('hidden');
             }
         }
 
-        // PANEL DINÁMICO HORIZONTAL
-        function renderPanel() {
-            const grid = document.getElementById('panel-grid');
+        function loadPanel() {
+            const grid = document.getElementById('grid-panel');
             grid.innerHTML = "";
-            const menuItems = [
-                { id: "extractor", icon: "fa-code", text: "Extractor de Codigo de Caja para Kohl's" },
-                { id: "qa", icon: "fa-file-medical", text: "QA Reports for Weekly Issues" },
-                { id: "cumples", icon: "fa-cake-candles", text: "Gestión de Cumpleañeros" },
-                { id: "usuarios", icon: "fa-user-shield", text: "Usuarios del Sistema" },
-                { id: "config", icon: "fa-gears", text: "Configuraciones" }
+            const items = [
+                { id: "extractor", icon: "fa-code", t: "Extractor Kohl's" },
+                { id: "qa", icon: "fa-file-medical", t: "QA Reports" },
+                { id: "cumples", icon: "fa-cake-candles", t: "Cumpleañeros" },
+                { id: "usuarios", icon: "fa-user-shield", t: "Usuarios" },
+                { id: "config", icon: "fa-gears", t: "Configuraciones" }
             ];
-
-            menuItems.forEach(item => {
-                if(currentUser.permisos.includes(item.id)) {
-                    grid.innerHTML += `<div class="tile" onclick="${item.id==='extractor'?'openExtractor()':''}"><i class="fa-solid ${item.icon}"></i><span>${item.text}</span></div>`;
+            items.forEach(i => {
+                if(userPermisos.includes(i.id)) {
+                    grid.innerHTML += `<div class="tile" onclick="${i.id==='extractor'?'openExtractor()':''}"><i class="fa-solid ${i.icon}"></i><span>${i.t}</span></div>`;
                 }
             });
         }
 
-        // LÓGICA EXTRACTOR
-        function openExtractor() { document.getElementById('sec-panel').classList.add('hidden'); document.getElementById('sec-extractor').classList.remove('hidden'); startClock(); renderCal(); }
-        function backToMenu() { document.getElementById('sec-extractor').classList.add('hidden'); document.getElementById('sec-panel').classList.remove('hidden'); }
-        function toggleExtBtn() { document.getElementById('btn-ext').classList.toggle('hidden', document.getElementById('inputCod').value.trim() === ""); }
+        function openExtractor() { 
+            document.getElementById('sec-panel').classList.add('hidden'); 
+            document.getElementById('sec-extractor').classList.remove('hidden'); 
+            startClock(); renderCal(); 
+        }
+        function backMenu() { document.getElementById('sec-extractor').classList.add('hidden'); document.getElementById('sec-panel').classList.remove('hidden'); }
+        function showExtBtn() { document.getElementById('btn-ext').classList.toggle('hidden', document.getElementById('inputCod').value.trim() === ""); }
         
-        function doExtract() {
+        function processCodes() {
             const out = document.getElementById('outputRes'); out.innerHTML = "";
             document.getElementById('inputCod').value.split('\n').forEach(l => {
                 if(l.trim().length >= 8) out.innerHTML += `<span class="codigo-tag">${l.trim().slice(-8)}</span>`;
             });
-            document.getElementById('res-box').classList.remove('hidden');
+            document.getElementById('res-area').classList.remove('hidden');
         }
 
         function copyClear() {
-            const txt = Array.from(document.querySelectorAll('.codigo-tag')).map(t => t.innerText).join(' ');
-            navigator.clipboard.writeText(txt).then(() => {
+            const text = Array.from(document.querySelectorAll('.codigo-tag')).map(t => t.innerText).join(' ');
+            navigator.clipboard.writeText(text).then(() => {
                 document.getElementById('inputCod').value = "";
-                document.getElementById('res-box').classList.add('hidden');
-                document.getElementById('btn-ext').classList.add('hidden');
+                document.getElementById('res-area').classList.add('hidden');
             });
         }
 
-        // VISUALES (RELOJ, CALENDARIO, MATRIX)
         function renderCal() {
             let h = `<b style="grid-column: span 7; color: var(--accent); text-align:center; margin-bottom:5px;">Abril 2026</b><span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>`;
             for(let i=1; i<=30; i++) h += `<span class="${i===13?'dia-actual':''}">${i}</span>`;
@@ -233,7 +223,6 @@
             }, 1000);
         }
 
-        // MATRIX
         const c = document.getElementById("canvasMatrix"); const mctx = c.getContext("2d");
         function rz() { c.width = window.innerWidth; c.height = window.innerHeight; }
         window.onresize = rz; rz();
