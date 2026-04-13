@@ -3,152 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema JB - Versión Final Fiel</title>
+    <title>Sistema JB - IA Master Control</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #03080f; --accent: #00f2ff; --card: #0d1117; --border: #161b22; }
+        :root { --bg: #02060a; --accent: #00f2ff; --win-blue: #0078d7; --card: #0d1117; --error: #ffeb3b; }
         body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; overflow: hidden; }
-        .full-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100%; }
-        .hidden { display: none !important; }
+        .view { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; position: absolute; transition: 0.5s ease-in-out; }
+        .hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
 
-        /* LOGIN: FIEL A CAPTURA */
-        .login-box { width: 600px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 40px; display: flex; align-items: center; gap: 30px; }
-        .avatar-frame { width: 150px; height: 150px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; }
+        /* LOGIN EVOLUTIVO */
+        .login-card { width: 600px; display: flex; align-items: center; gap: 30px; background: rgba(255,255,255,0.02); padding: 40px; border: 1px solid #1a2026; border-radius: 12px; box-shadow: 0 0 20px rgba(0,242,255,0.05); }
+        .avatar-frame { width: 150px; height: 150px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; overflow: hidden; }
         .avatar-frame i { font-size: 5rem; color: #1f4b5e; }
         .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
-        .ia-text { color: var(--accent); font-style: italic; margin-bottom: 10px; font-size: 0.95rem; }
-        .input-win { width: 100%; background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 6px; outline: none; }
 
-        /* PANEL DE CONTROL: FIEL A CAPTURA */
-        .panel-container { width: 850px; background: var(--card); border: 1px solid var(--border); padding: 30px; border-radius: 12px; }
-        .grid-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .panel-card { 
-            background: #0d1117; border-left: 4px solid var(--accent); padding: 35px; 
-            display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s;
-        }
-        .panel-card:hover { background: #161b22; }
-        .panel-card i { font-size: 2rem; color: var(--accent); }
+        /* INTERFAZ WINDOWS 8 FUTURISTA */
+        .metro-grid { display: grid; grid-template-columns: repeat(4, 160px); grid-template-rows: repeat(2, 160px); gap: 12px; }
+        .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); }
+        .tile:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: 0 0 25px var(--accent); z-index: 10; }
+        .tile.wide { width: 332px; grid-column: span 2; }
+        .tile span { position: absolute; bottom: 10px; left: 10px; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
 
-        /* EXTRACTOR: FIEL A CAPTURA */
-        .extractor-container { width: 950px; background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 40px; display: flex; gap: 40px; }
-        .side-col { width: 250px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .main-col { flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
+        /* EXTRACTOR & LOGICA DE CIRCULO */
+        .ext-container { width: 1100px; display: flex; gap: 30px; background: var(--card); padding: 30px; border-radius: 15px; border: 1px solid #1a2026; }
+        .side-tools { width: 300px; display: flex; flex-direction: column; align-items: center; gap: 20px; border-right: 1px solid #30363d; padding-right: 20px; }
         
-        /* Reloj Circular */
-        .clock-wrap { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
-        .clock-canvas { position: absolute; transform: rotate(-90deg); }
-        .digital-time { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+        .progress-box { position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; }
+        .prog-canvas { position: absolute; transform: rotate(-90deg); }
+        .time-display { text-align: center; z-index: 5; }
+        .time-display .clock-num { font-size: 1.8rem; font-weight: bold; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        .alarm-msg { font-size: 0.8rem; color: var(--error); margin-top: 5px; min-height: 20px; font-weight: bold; }
 
-        textarea { width: 100%; height: 160px; background: white; color: black; border: none; padding: 15px; font-family: monospace; border-radius: 4px; resize: none; }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .btn-blue { background: #1b6cd5; color: white; }
+        textarea { width: 100%; height: 150px; background: white; color: black; border: none; padding: 15px; font-family: 'Consolas', monospace; font-size: 1.1rem; border-radius: 4px; resize: none; }
+        .btn-win { width: 100%; padding: 15px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 1rem; }
+        .btn-blue { background: #0078d7; color: white; }
         .btn-green { background: #238636; color: white; }
-        .btn-back { background: #3c4043; color: white; }
     </style>
 </head>
 <body>
 
-    <div class="full-screen">
-        <div id="login-v" class="login-box">
+    <div id="v-login" class="view">
+        <div class="login-card">
             <div class="avatar-frame">
-                <i class="fa-solid fa-robot" id="ia-bot"></i>
-                <img id="user-pic" src="https://i.imgur.com/8Km9tLL.png" class="hidden">
+                <i class="fa-solid fa-robot" id="bot-icon"></i>
+                <img id="user-photo" src="https://i.imgur.com/8Km9tLL.png" class="hidden">
             </div>
             <div style="flex-grow: 1;">
-                <h2 style="color: var(--accent); margin: 0 0 20px 0;">SISTEMA DE SEGURIDAD</h2>
-                <div id="ia-prompt" class="ia-text">IA: Ingrese su identificación.</div>
-                <input type="text" id="user-in" class="input-win" placeholder="Usuario" onkeypress="auth1(event)">
-                <input type="password" id="pin-in" class="input-win hidden" placeholder="PIN" oninput="auth2(this.value)">
+                <h2 style="color: var(--accent); margin: 0 0 10px 0; letter-spacing: 2px;">SECURITY LOGIN</h2>
+                <div id="asis-msg" style="color:var(--accent); font-style:italic; margin-bottom: 15px;">IA: Esperando identificación...</div>
+                <input type="text" id="u-in" placeholder="Usuario" style="width:100%; padding:12px; background:#0d1117; color:white; border:1px solid #30363d; margin-bottom:10px;" onkeypress="handleU(event)">
+                <input type="password" id="p-in" class="hidden" placeholder="PIN de Seguridad" style="width:100%; padding:12px; background:#0d1117; color:white; border:1px solid #30363d;" oninput="handleP(this.value)">
             </div>
         </div>
+    </div>
 
-        <div id="panel-v" class="panel-container hidden">
-            <h2 style="color: var(--accent); margin-bottom: 25px;">PANEL DE CONTROL</h2>
-            <div class="grid-panel">
-                <div class="panel-card" onclick="toExt()"><i class="fa-solid fa-code"></i><span>Extractor Kohl's</span></div>
-                <div class="panel-card"><i class="fa-solid fa-file-medical"></i><span>QA Reports</span></div>
-                <div class="panel-card"><i class="fa-solid fa-cake-candles"></i><span>Cumpleañeros</span></div>
-                <div class="panel-card"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></div>
-                <div class="panel-card" style="grid-column: span 2;"><i class="fa-solid fa-gears"></i><span>Configuraciones</span></div>
+    <div id="v-welcome" class="view hidden">
+        <div style="width: 80%;">
+            <h1 style="font-size: 4.5rem; font-weight: 100; margin: 0;">Hola, <span id="user-display"></span></h1>
+            <div id="ia-report" style="margin-top: 20px; padding: 25px; border-left: 4px solid var(--accent); background: rgba(0,242,255,0.05); font-size: 1.2rem;">
+                IA: Analizando parámetros...
             </div>
+            <div id="lunch-module" class="hidden" style="margin-top:25px; background: rgba(255, 235, 59, 0.1); padding: 20px; border: 1px dashed var(--error);">
+                <i class="fa-solid fa-brain"></i> IA: No he aprendido tu horario de almuerzo para esta semana. ¿A qué hora sueles irte hoy? 
+                <input type="time" id="lunch-time-input" style="padding: 5px; border-radius: 4px; border: none; margin-left: 10px;">
+                <button onclick="learnLunch()" style="padding: 5px 15px; background: var(--accent); border: none; cursor: pointer; font-weight: bold;">Enseñar a IA</button>
+            </div>
+            <button class="btn-win btn-blue" style="width: 250px; margin-top: 40px;" onclick="showView('v-panel')">ACCEDER AL SISTEMA</button>
         </div>
+    </div>
 
-        <div id="ext-v" class="extractor-container hidden">
-            <div class="side-col">
-                <div class="clock-wrap">
-                    <canvas id="c-clock" width="180" height="180" class="clock-canvas"></canvas>
-                    <div id="d-clock" class="digital-time">00:00:00</div>
+    <div id="v-panel" class="view hidden" style="flex-direction: column; align-items: flex-start; padding-left: 100px;">
+        <h2 style="font-weight: 100; font-size: 3.5rem; margin-bottom: 30px;">Panel de Control</h2>
+        <div class="metro-grid">
+            <div class="tile wide" style="background:#00a4ef" onclick="showView('v-ext'); initMasterEngine();">
+                <i class="fa-solid fa-code-branch"></i><span>Extractor de Códigos</span>
+            </div>
+            <div class="tile" style="background:#7fba00"><i class="fa-solid fa-clipboard-check"></i><span>QA Reports</span></div>
+            <div class="tile" style="background:#744da9"><i class="fa-solid fa-cake-candles"></i><span>Cumpleaños</span></div>
+            <div class="tile" style="background:#ffb900"><i class="fa-solid fa-users-gear"></i><span>Gestión</span></div>
+            <div class="tile" style="background:#f25022" onclick="location.reload()"><i class="fa-solid fa-power-off"></i><span>Cerrar</span></div>
+        </div>
+    </div>
+
+    <div id="v-ext" class="view hidden">
+        <div class="ext-container">
+            <div class="side-tools">
+                <div class="progress-box">
+                    <canvas id="progCanvas" width="200" height="200" class="prog-canvas"></canvas>
+                    <div class="time-display">
+                        <div id="d-time" class="clock-num">00:00:00</div>
+                        <div id="alarm-txt" class="alarm-msg"></div>
+                    </div>
                 </div>
-                <div id="cal" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; width: 100%; font-size: 0.85rem;"></div>
-                <button class="btn btn-back" onclick="toPan()">Volver al Menú</button>
+                <div id="cal-box" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; width:100%;"></div>
+                <button class="btn-win" style="background:#3c4043;" onclick="showView('v-panel')">Volver</button>
             </div>
-            <div class="main-col">
-                <h2 style="color: var(--accent); margin: 0;">Extractor de Código Kohl's</h2>
-                <textarea id="raw" placeholder="Pega los códigos aquí..."></textarea>
-                <button class="btn btn-blue" onclick="run()">Extraer Ahora</button>
-                <textarea id="out" readonly></textarea>
-                <button class="btn btn-green" onclick="copy()"><i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar Todo</button>
+            <div style="flex-grow:1; display:flex; flex-direction:column; gap:12px;">
+                <h3 style="color:var(--accent); margin:0;">Herramienta de Extracción Blindada</h3>
+                <textarea id="raw-in" placeholder="Pegue la lista de códigos aquí..."></textarea>
+                <button class="btn-win btn-blue" onclick="runExtraction()">EXTRAER ÚLTIMOS 8 DÍGITOS</button>
+                <textarea id="raw-out" readonly placeholder="Resultados listos para copiar..."></textarea>
+                <button class="btn-win btn-green" onclick="copyResult()"><i class="fa-brands fa-whatsapp"></i> COPIAR Y LIMPIAR</button>
             </div>
         </div>
     </div>
 
     <script>
-        const U = "JBaltodano_Admin", P = "404471";
+        // DATOS DE USUARIOS Y LOGICA DE APRENDIZAJE
+        let user = "";
+        const DB = { 
+            "JBaltodano_Admin": { pin: "404471", name: "Jose Alfredo" },
+            "Colaborador_QA": { pin: "123456", name: "Equipo QA" }
+        };
 
-        function auth1(e) {
-            if(e.key === 'Enter' && document.getElementById('user-in').value === U) {
-                document.getElementById('ia-prompt').innerText = "IA: Usuario validado. Ingrese PIN.";
-                document.getElementById('ia-bot').classList.add('hidden');
-                document.getElementById('user-pic').classList.remove('hidden');
-                document.getElementById('user-in').classList.add('hidden');
-                document.getElementById('pin-in').classList.remove('hidden').focus();
+        function handleU(e) {
+            if(e.key === 'Enter') {
+                const val = document.getElementById('u-in').value;
+                if(DB[val]) {
+                    user = val;
+                    document.getElementById('asis-msg').innerText = "IA: Identidad verificada. Ingrese PIN.";
+                    document.getElementById('bot-icon').classList.add('hidden');
+                    document.getElementById('user-photo').classList.remove('hidden');
+                    document.getElementById('u-in').classList.add('hidden');
+                    document.getElementById('p-in').classList.remove('hidden').focus();
+                }
             }
         }
 
-        function auth2(v) {
-            if(v === P) { document.getElementById('login-v').classList.add('hidden'); toPan(); }
+        function handleP(v) {
+            if(v === DB[user].pin) {
+                document.getElementById('user-display').innerText = DB[user].name;
+                showView('v-welcome');
+                processIALogic();
+            }
         }
 
-        function toPan() { 
-            document.getElementById('ext-v').classList.add('hidden');
-            document.getElementById('panel-v').classList.remove('hidden'); 
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        function toExt() {
-            document.getElementById('panel-v').classList.add('hidden');
-            document.getElementById('ext-v').classList.remove('hidden');
-            initClock(); initCal();
+        // --- LÓGICA DE APRENDIZAJE IA Y CALENDARIO ---
+        function getWeek() {
+            const d = new Date();
+            const start = new Date(d.getFullYear(), 0, 1);
+            return Math.ceil((((d - start) / 86400000) + start.getDay() + 1) / 7);
         }
 
-        // Extracción blindada: últimos 8 caracteres
-        function run() {
-            const lines = document.getElementById('raw').value.split('\n');
-            const res = lines.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
-            document.getElementById('out').value = res.join('\n');
+        function processIALogic() {
+            const now = new Date();
+            const day = now.getDay();
+            const report = document.getElementById('ia-report');
+            const lunchMod = document.getElementById('lunch-module');
+            const weekKey = `lunch_${user}_W${getWeek()}`;
+
+            // 1. Verificación de Cumpleaños (Ejemplo con Hilda)
+            if(now.getMonth() === 1 && now.getDate() === 27) report.innerHTML = "IA: ¡Hoy es el cumpleaños de tu madre Hilda! No olvides felicitarla.";
+            else if(day === 0) report.innerHTML = "IA: Domingo detectado. Modo descanso total activo. Disfruta con Fabiana y tu hija.";
+            else if(day === 6) report.innerHTML = "IA: Sábado activo. Jornada corta de trabajo. ¡Buen provecho!";
+            else report.innerHTML = "IA: Jornada laboral estándar. Listos para extraer códigos.";
+
+            // 2. Aprendizaje de Almuerzo por Usuario
+            if(day !== 0 && day !== 6) {
+                if(!localStorage.getItem(weekKey)) lunchMod.classList.remove('hidden');
+            }
         }
 
-        function copy() {
-            navigator.clipboard.writeText(document.getElementById('out').value.replace(/\n/g, ' '));
-            document.getElementById('raw').value = ""; document.getElementById('out').value = "";
+        function learnLunch() {
+            const time = document.getElementById('lunch-time-input').value;
+            if(time) {
+                localStorage.setItem(`lunch_${user}_W${getWeek()}`, time);
+                document.getElementById('lunch-module').classList.add('hidden');
+                alert("IA: He aprendido tu horario de almuerzo para esta semana.");
+            }
         }
 
-        function initClock() {
-            const ctx = document.getElementById('c-clock').getContext('2d');
+        // --- MOTOR DEL EXTRACTOR Y PROGRESO LABORAL ---
+        function initMasterEngine() {
+            initCalendar();
+            const canvas = document.getElementById('progCanvas');
+            const ctx = canvas.getContext('2d');
+            
             setInterval(() => {
-                const n = new Date();
-                ctx.clearRect(0,0,180,180);
-                ctx.beginPath(); ctx.arc(90,90,85,0,2*Math.PI); ctx.strokeStyle="#161b22"; ctx.lineWidth=8; ctx.stroke();
-                ctx.beginPath(); ctx.arc(90,90,85,0,(n.getSeconds()/60)*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.stroke();
-                document.getElementById('d-clock').innerText = n.toLocaleTimeString();
+                const now = new Date();
+                const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+                const day = now.getDay();
+                document.getElementById('d-time').innerText = now.toLocaleTimeString();
+
+                // Definición de Horarios Laborales
+                let start = 7, end = 17; // Lunes y Viernes
+                if(day >= 2 && day <= 4) end = 18; // Martes a Jueves
+
+                // Dibujo de Círculo
+                ctx.clearRect(0,0,200,200);
+                ctx.beginPath(); ctx.arc(100,100,90,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=12; ctx.stroke();
+                
+                let progress = 0;
+                if(h >= start && h < end) {
+                    let totalSecs = (end - start) * 3600;
+                    let elapsed = ((h - start) * 3600) + (m * 60) + s;
+                    progress = elapsed / totalSecs;
+                } else if(h >= end) progress = 1;
+
+                ctx.beginPath(); ctx.arc(100,100,90,0,progress*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=12; ctx.stroke();
+
+                // Alarmas Inteligentes
+                const alarm = document.getElementById('alarm-txt');
+                const lunchSaved = localStorage.getItem(`lunch_${user}_W${getWeek()}`);
+                
+                if(h === start && m === 0) alarm.innerText = "¡INICIO DE JORNADA!";
+                else if(lunchSaved && now.toLocaleTimeString().substring(0,5) === lunchSaved) alarm.innerText = "¡HORA DE ALMUERZO!";
+                else if(h === end && m === 0) alarm.innerText = "¡FIN DE JORNADA!";
+                else alarm.innerText = "";
             }, 1000);
         }
 
-        function initCal() {
-            let d = new Date();
-            document.getElementById('cal').innerHTML = `<div style="text-align:center;color:var(--accent);margin-bottom:10px;">Abril 2026</div>` + 
-            `<div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;">` +
-            `<span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>` +
-            Array.from({length:30}, (_,i)=>`<span style="${i+1===13?'color:var(--accent);font-weight:bold':''}">${i+1}</span>`).join('') + `</div>`;
+        // LÓGICA DE EXTRACCIÓN (8 CARACTERES)
+        function runExtraction() {
+            const val = document.getElementById('raw-in').value.split('\n');
+            const result = val.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
+            document.getElementById('raw-out').value = result.join('\n');
+        }
+
+        function copyResult() {
+            const out = document.getElementById('raw-out');
+            navigator.clipboard.writeText(out.value.replace(/\n/g, ' '));
+            document.getElementById('raw-in').value = "";
+            out.value = "";
+        }
+
+        function initCalendar() {
+            const d = new Date();
+            document.getElementById('cal-box').innerHTML = `<div style="text-align:center;color:var(--accent);font-weight:bold;margin-bottom:10px;">${d.toLocaleString('es', {month:'long'})} 2026</div><div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:0.8rem;">` + 
+            "DLMMJVS".split('').map(l => `<span>${l}</span>`).join('') + 
+            Array.from({length:30}, (_,i) => `<span style="${i+1===d.getDate()?'color:var(--accent);font-weight:bold;border:1px solid var(--accent)':''}">${i+1}</span>`).join('') + "</div>";
         }
     </script>
 </body>
