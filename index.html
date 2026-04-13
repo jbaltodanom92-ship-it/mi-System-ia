@@ -3,51 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema IA - Jose Alfredo B.</title>
+    <title>Sistema PWA - Jose Alfredo B.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --bg: #03080f; --card: rgba(13, 17, 23, 0.98); --accent: #00f2ff; --text: #c9d1d9; --panel: #161b22;
         }
-        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: var(--bg); color: var(--text); }
-        #canvasMatrix { position: fixed; top: 0; left: 0; z-index: -1; }
-
-        .container { 
-            background: var(--card); backdrop-filter: blur(20px);
-            padding: 30px; border-radius: 15px; width: 95%; max-width: 900px; 
-            border: 1px solid #30363d; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        }
-
-        /* DISEÑO EXTRACTOR ACTUALIZADO */
-        .layout-extractor { display: flex; gap: 30px; align-items: flex-start; }
+        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: var(--bg); color: var(--text); display: flex; align-items: center; justify-content: center; }
         
-        /* Reloj dentro del círculo */
-        .col-reloj { flex: 0 0 180px; text-align: center; position: relative; }
-        .wrapper-reloj { position: relative; width: 140px; height: 140px; margin: 0 auto; }
-        #hora-digital { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: var(--accent); font-weight: bold; font-size: 1.1rem; font-family: monospace;
+        /* MOTOR MATRIX REALISTA */
+        #canvasMatrix { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
+
+        .app-container {
+            width: 95%; max-width: 1100px; height: 90vh;
+            background: var(--card); backdrop-filter: blur(15px);
+            border: 1px solid #30363d; border-radius: 15px;
+            position: relative; z-index: 10; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.15);
         }
 
-        /* Calendario estético */
-        #calendario-mini { 
-            margin-top: 20px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border: 1px solid #333;
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-size: 0.65rem;
-        }
-        .dia-actual { background: var(--accent); color: #000; border-radius: 50%; font-weight: bold; padding: 2px; }
+        /* LOGIN CON IA (TEXTO) */
+        #login-flow { padding: 40px; text-align: center; }
+        .asis-box { font-style: italic; color: #8b949e; margin-bottom: 20px; min-height: 24px; }
+        input { background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 6px; width: 280px; text-align: center; margin-bottom: 15px; }
 
-        /* Resultados Horizontales */
+        /* PANEL DE TRABAJO (5 PESTAÑAS) */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 40px; }
+        .tile { background: var(--panel); border-left: 4px solid var(--accent); border-radius: 8px; padding: 25px; cursor: pointer; transition: 0.3s; }
+        .tile:hover { transform: translateY(-5px); box-shadow: 0 0 25px var(--accent); }
+        .tile i { font-size: 2rem; color: var(--accent); margin-bottom: 15px; display: block; }
+        .tile span { font-size: 0.9rem; font-weight: bold; }
+
+        /* EXTRACTOR HORIZONTAL */
+        .layout-extractor { display: flex; gap: 30px; padding: 30px; }
+        .col-sidebar { flex: 0 0 200px; text-align: center; }
+        .wrapper-reloj { position: relative; width: 150px; height: 150px; margin: 0 auto; }
+        #hora-digital { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--accent); font-weight: bold; font-size: 1.2rem; }
+        
+        #calendario-box { margin-top: 20px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border: 1px solid #333; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-size: 0.65rem; }
+        .dia-actual { background: var(--accent); color: #000; border-radius: 50%; font-weight: bold; }
+
         .col-main { flex: 1; display: flex; flex-direction: column; }
-        #outputRes { 
-            width: 100%; height: 100px; padding: 12px; border-radius: 8px; border: 1px solid #238636; 
-            background: #010409; color: #aff5b4; font-family: monospace; font-size: 0.9rem;
-            display: flex; flex-wrap: wrap; gap: 10px; overflow-y: auto; align-content: flex-start;
-        }
-        .codigo-tag { background: rgba(35, 134, 54, 0.2); border: 1px solid #238636; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+        #outputRes { width: 100%; min-height: 120px; padding: 15px; border-radius: 8px; border: 1px solid #238636; background: #010409; display: flex; flex-wrap: wrap; gap: 8px; overflow-y: auto; }
+        .codigo-tag { background: rgba(35, 134, 54, 0.2); border: 1px solid #238636; padding: 4px 10px; border-radius: 5px; color: #aff5b4; font-family: monospace; }
 
-        textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: var(--accent); font-family: monospace; resize: none; margin-bottom: 15px; }
-        button { width: 100%; background: #007bff; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .btn-copy { background: #238636; margin-top: 15px; }
+        textarea { width: 100%; background: #0d1117; border: 1px solid #30363d; color: var(--accent); padding: 15px; border-radius: 8px; resize: none; }
+        button { background: #007bff; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        .btn-success { background: #238636; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -55,111 +57,132 @@
 
     <canvas id="canvasMatrix"></canvas>
 
-    <div id="entorno-trabajo" class="container">
-        <h3 style="color: var(--accent); text-align:center; margin-bottom: 25px;">Extractor de Código Kohl's</h3>
+    <div class="app-container">
         
-        <div class="layout-extractor">
-            <div class="col-reloj">
-                <div class="wrapper-reloj">
-                    <canvas id="canvasReloj" width="140" height="140"></canvas>
-                    <div id="hora-digital">00:00:00</div>
-                </div>
-                
-                <div id="calendario-mini">
-                    <b style="grid-column: span 7; color: var(--accent); margin-bottom:5px;">Abril 2026</b>
-                    <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
-                    ${generarDias()}
-                </div>
-            </div>
-
-            <div class="col-main">
-                <textarea id="inputCodigo" placeholder="Pega los códigos aquí..." style="height: 120px;" oninput="revisarInput()"></textarea>
-                <button id="btn-extraer" class="hidden" onclick="procesar()">Extraer Código</button>
-                
-                <div id="res-box" class="hidden">
-                    <p style="font-size: 0.8rem; color: var(--accent); margin: 15px 0 5px;">Códigos Procesados:</p>
-                    <div id="outputRes"></div>
-                    <button class="btn-copy" onclick="copiarLimpiar()">
-                        <i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar Todo
-                    </button>
+        <div id="sec-login">
+            <div id="login-flow">
+                <h2 style="color: var(--accent)">SISTEMA IA</h2>
+                <div id="asis-msg" class="asis-box">IA: Por favor, ingrese su identificación.</div>
+                <input type="text" id="user-in" placeholder="Usuario" oninput="checkUser(this.value)">
+                <div id="pin-area" class="hidden">
+                    <input type="password" id="pin-in" placeholder="PIN" oninput="checkPin(this.value)">
+                    <button id="btn-entrar" class="hidden" onclick="showPanel()">Acceder</button>
                 </div>
             </div>
         </div>
-        <button style="background:#30363d; margin-top:20px;" onclick="location.reload()">Volver al Menú Principal</button>
+
+        <div id="sec-panel" class="hidden">
+            <h3 style="color: var(--accent); text-align:center; margin-top:30px;">Panel de Trabajo</h3>
+            <div class="grid-container">
+                <div class="tile" onclick="openExtractor()"><i class="fa-solid fa-code"></i><span>Extractor de Codigo de Caja para Kohl's</span></div>
+                <div class="tile"><i class="fa-solid fa-file-medical"></i><span>QA Reports for Weekly Issues</span></div>
+                <div class="tile"><i class="fa-solid fa-cake-candles"></i><span>Cumpleañeros</span></div>
+                <div class="tile"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></div>
+                <div class="tile"><i class="fa-solid fa-gears"></i><span>Configuraciones</span></div>
+            </div>
+            <div style="text-align:center; margin-bottom: 30px;">
+                <button style="background:#30363d; width: 200px;" onclick="location.reload()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div id="sec-extractor" class="hidden">
+            <h3 style="color: var(--accent); text-align:center; margin-top:20px;">Extractor de Código Kohl's</h3>
+            <div class="layout-extractor">
+                <div class="col-sidebar">
+                    <div class="wrapper-reloj">
+                        <canvas id="canvasReloj" width="150" height="150"></canvas>
+                        <div id="hora-digital">00:00:00</div>
+                    </div>
+                    <div id="calendario-box"></div>
+                </div>
+                <div class="col-main">
+                    <textarea id="inputCod" placeholder="Pega los códigos aquí..." style="height: 140px;" oninput="toggleExtBtn()"></textarea>
+                    <button id="btn-ext" class="hidden" onclick="doExtract()">Extraer Código</button>
+                    <div id="res-box" class="hidden">
+                        <div id="outputRes" style="margin-top:20px;"></div>
+                        <button class="btn-success" onclick="copyClear()"><i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar Todo</button>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 20px 30px;"><button style="background:#30363d;" onclick="backMenu()">Volver al Menú</button></div>
+        </div>
     </div>
 
     <script>
-        function generarDias() {
-            let html = "";
-            for(let i=1; i<=30; i++) html += `<span class="${i===13?'dia-actual':''}">${i}</span>`;
-            return html;
+        // LOGIN IA
+        function checkUser(v) {
+            if(v === "JBaltodano_Admin") {
+                document.getElementById('asis-msg').innerText = "IA: Usuario correcto. Ingrese su PIN de seguridad.";
+                document.getElementById('pin-area').classList.remove('hidden');
+            }
         }
-        document.getElementById('calendario-mini').innerHTML = `
-            <b style="grid-column: span 7; color: var(--accent); margin-bottom:5px;">Abril 2026</b>
-            <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
-            ${generarDias()}`;
-
-        function revisarInput() {
-            document.getElementById('btn-extraer').classList.toggle('hidden', document.getElementById('inputCodigo').value.trim() === "");
+        function checkPin(v) { if(v === "404471") document.getElementById('btn-entrar').classList.remove('hidden'); }
+        function showPanel() { 
+            document.getElementById('sec-login').classList.add('hidden'); 
+            document.getElementById('sec-panel').classList.remove('hidden'); 
         }
 
-        function procesar() {
-            const input = document.getElementById('inputCodigo').value;
-            const lineas = input.split('\n');
-            const contenedor = document.getElementById('outputRes');
-            contenedor.innerHTML = "";
-            
-            lineas.forEach(l => {
-                if(l.trim().length >= 8) {
-                    const cod = l.trim().slice(-8);
-                    contenedor.innerHTML += `<span class="codigo-tag">${cod}</span> `;
-                }
+        // NAVEGACIÓN
+        function openExtractor() { 
+            document.getElementById('sec-panel').classList.add('hidden'); 
+            document.getElementById('sec-extractor').classList.remove('hidden'); 
+            startClock(); renderCal(); 
+        }
+        function backMenu() { 
+            document.getElementById('sec-extractor').classList.add('hidden'); 
+            document.getElementById('sec-panel').classList.remove('hidden'); 
+        }
+
+        // LÓGICA EXTRACTOR
+        function toggleExtBtn() { document.getElementById('btn-ext').classList.toggle('hidden', document.getElementById('inputCod').value.trim() === ""); }
+        function doExtract() {
+            const out = document.getElementById('outputRes'); out.innerHTML = "";
+            document.getElementById('inputCod').value.split('\n').forEach(l => {
+                if(l.trim().length >= 8) out.innerHTML += `<span class="codigo-tag">${l.trim().slice(-8)}</span>`;
             });
             document.getElementById('res-box').classList.remove('hidden');
         }
-
-        function copiarLimpiar() {
-            const tags = document.querySelectorAll('.codigo-tag');
-            let texto = Array.from(tags).map(t => t.innerText).join(' ');
-            navigator.clipboard.writeText(texto);
-            document.getElementById('inputCodigo').value = "";
+        function copyClear() {
+            const txt = Array.from(document.querySelectorAll('.codigo-tag')).map(t => t.innerText).join(' ');
+            navigator.clipboard.writeText(txt);
+            document.getElementById('inputCod').value = "";
             document.getElementById('res-box').classList.add('hidden');
-            document.getElementById('btn-extraer').classList.add('hidden');
-            alert("Copiado en formato horizontal.");
+            document.getElementById('btn-ext').classList.add('hidden');
         }
 
-        function iniciarReloj() {
+        // COMPONENTES VISUALES
+        function renderCal() {
+            let h = `<b style="grid-column: span 7; color: var(--accent); margin-bottom:5px;">Abril 2026</b><span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>`;
+            for(let i=1; i<=30; i++) h += `<span class="${i===13?'dia-actual':''}">${i}</span>`;
+            document.getElementById('calendario-box').innerHTML = h;
+        }
+        function startClock() {
             const ctx = document.getElementById('canvasReloj').getContext('2d');
             setInterval(() => {
-                const ahora = new Date();
-                ctx.clearRect(0,0,140,140);
-                ctx.beginPath(); ctx.arc(70,70,65,0,2*Math.PI); ctx.strokeStyle="#161b22"; ctx.lineWidth=8; ctx.stroke();
-                
-                let h = ahora.getHours() + ahora.getMinutes()/60;
-                let pct = (h - 8) / 9; // Jornada 8am-5pm
-                ctx.beginPath(); ctx.arc(70,70,65, -Math.PI/2, -Math.PI/2 + 2*Math.PI*Math.min(Math.max(pct,0),1));
-                ctx.strokeStyle="#00f2ff"; ctx.lineCap="round"; ctx.stroke();
-                
-                document.getElementById('hora-digital').innerText = ahora.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+                const d = new Date(); ctx.clearRect(0,0,150,150);
+                ctx.beginPath(); ctx.arc(75,75,70,0,2*Math.PI); ctx.strokeStyle="#161b22"; ctx.lineWidth=10; ctx.stroke();
+                let pct = (d.getHours() - 8 + d.getMinutes()/60) / 9;
+                ctx.beginPath(); ctx.arc(75,75,70,-Math.PI/2, -Math.PI/2 + 2*Math.PI*Math.min(Math.max(pct,0),1));
+                ctx.strokeStyle="#00f2ff"; ctx.lineWidth=10; ctx.stroke();
+                document.getElementById('hora-digital').innerText = d.toLocaleTimeString();
             }, 1000);
         }
-        iniciarReloj();
 
-        // Efecto Matrix Fondo
-        const m = document.getElementById("canvasMatrix"); const mctx = m.getContext("2d");
-        function rz() { m.width = window.innerWidth; m.height = window.innerHeight; }
+        // MATRIX BACKGROUND
+        const c = document.getElementById("canvasMatrix"); const mctx = c.getContext("2d");
+        function rz() { c.width = window.innerWidth; c.height = window.innerHeight; }
         window.onresize = rz; rz();
-        const cols = Array(Math.floor(m.width/15)).fill(1);
-        function dr() {
-            mctx.fillStyle = "rgba(3, 8, 15, 0.15)"; mctx.fillRect(0,0,m.width,m.height);
+        const cols = Array(Math.floor(c.width/15)).fill(1);
+        function drawM() {
+            mctx.fillStyle = "rgba(3, 8, 15, 0.1)"; mctx.fillRect(0,0,c.width,c.height);
             mctx.fillStyle = "#00f2ff22"; mctx.font = "15px monospace";
             cols.forEach((y, i) => {
                 mctx.fillText("01"[Math.floor(Math.random()*2)], i*15, y*15);
-                if(y*15 > m.height && Math.random() > 0.975) cols[i] = 0;
+                if(y*15 > c.height && Math.random() > 0.975) cols[i] = 0;
                 cols[i]++;
             });
         }
-        setInterval(dr, 50);
+        setInterval(drawM, 50);
     </script>
 </body>
 </html>
