@@ -198,6 +198,14 @@
                     <svg width="80" height="80"><circle class="bg-circle" cx="40" cy="40" r="35"></circle>
                     <circle id="circle-dia" class="fg-circle" cx="40" cy="40" r="35"></circle></svg>
                     <div class="percentage-text" id="txt-dia" style="position: absolute; top: 25px; left: 25px; font-size: 0.7rem;">0%</div>
+                    .progress-box { position: relative; width: 80px; height: 80px; display: inline-block; }
+.progress-box svg { transform: rotate(-90deg); }
+.bg-circle { fill: none; stroke: #30363d; stroke-width: 5; }
+.fg-circle { 
+    fill: none; stroke: #00f2ff; stroke-width: 5; 
+    stroke-dasharray: 220; stroke-dashoffset: 220; 
+    stroke-linecap: round; transition: 1s; 
+}
                     <div style="font-size: 0.6rem; color: #8b949e;">Día</div>
                 </div>
                 <div class="progress-box">
