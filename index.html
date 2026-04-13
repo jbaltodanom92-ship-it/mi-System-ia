@@ -17,8 +17,12 @@
         .avatar-frame { width: 140px; height: 140px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; overflow: hidden; }
         .avatar-frame i { font-size: 4.5rem; color: #1f4b5e; }
         .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
-        input { width:100%; padding:14px; background:#0d1117; color:white; border:1px solid #30363d; border-radius: 4px; font-size: 1rem; outline: none; }
         
+        .input-group { position: relative; width: 100%; }
+        input { width:100%; padding:14px; background:#0d1117; color:white; border:1px solid #30363d; border-radius: 4px; font-size: 1rem; outline: none; box-sizing: border-box; }
+        .toggle-pin { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #444; cursor: pointer; transition: 0.3s; }
+        .toggle-pin.active { color: var(--accent); }
+
         /* PANEL METRO */
         .metro-grid { display: grid; grid-template-columns: repeat(4, 160px); gap: 12px; }
         .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
@@ -38,13 +42,13 @@
         .btn-blue { background: #0078d7; color: white; }
         .btn-green { background: #238636; color: white; }
 
-        /* CALENDARIO DINÁMICO */
+        /* CALENDARIO DIN?MICO */
         .today-circle { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
         .today-svg { position: absolute; transform: rotate(-90deg); width: 26px; height: 26px; }
 
-        /* BOTONES DE DECISIÓN IA */
+        /* IA PROMPT DECISI?N */
         .ia-decision-box { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-mini { padding: 5px 15px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; border: 1px solid var(--accent); background: none; color: white; }
+        .btn-mini { padding: 5px 15px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; border: 1px solid var(--accent); background: none; color: white; transition: 0.3s; }
         .btn-mini:hover { background: var(--accent); color: black; }
     </style>
 </head>
@@ -58,15 +62,19 @@
             </div>
             <div style="flex-grow: 1;">
                 <h2 style="color: var(--accent); margin: 0 0 10px 0;">SEGURIDAD JB</h2>
-                <div id="asis-msg" style="background: rgba(0,242,255,0.1); border: 1px solid var(--accent); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">IA: Ingrese su identificación.</div>
+                <div id="asis-msg" style="background: rgba(0,242,255,0.1); border: 1px solid var(--accent); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">IA: Ingrese su identificaci?n.</div>
                 
                 <input type="text" id="u-in" placeholder="Usuario" oninput="iaIdentify(this.value)">
-                <input type="password" id="p-in" class="hidden" placeholder="PIN" oninput="iaAuth(this.value)">
+                
+                <div id="pin-container" class="input-group hidden display-none">
+                    <input type="password" id="p-in" placeholder="PIN" oninput="iaAuth(this.value)">
+                    <i class="fa-solid fa-eye toggle-pin" id="pin-eye" onclick="togglePinSee()"></i>
+                </div>
 
                 <div id="ia-prompt" class="hidden display-none">
-                    <p style="font-size:0.8rem; margin:10px 0;">¿Deseas asistencia de IT?</p>
+                    <p style="font-size:0.8rem; margin:10px 0; color:var(--error);">¿Deseas asistencia de IT?</p>
                     <div class="ia-decision-box">
-                        <button class="btn-mini" onclick="enableITSupport()">SÍ</button>
+                        <button class="btn-mini" onclick="enableITSupport()">S?</button>
                         <button class="btn-mini" onclick="closeIAPrompt()">NO</button>
                     </div>
                 </div>
@@ -112,9 +120,9 @@
                 <button class="btn-win" style="background:#333;" onclick="showView('v-panel')">VOLVER</button>
             </div>
             <div style="flex-grow:1; display:flex; flex-direction:column; gap:12px;">
-                <h3 style="color:var(--accent); margin:0;">Herramienta de Extracción Blindada</h3>
-                <textarea id="raw-in" placeholder="Pegue la lista aquí..." oninput="toggleRun()"></textarea>
-                <button id="btn-run" class="btn-win btn-blue hidden display-none" onclick="processX()">EXTRAER ÚLTIMOS 8 DÍGITOS</button>
+                <h3 style="color:var(--accent); margin:0;">Herramienta de Extracci?n Blindada</h3>
+                <textarea id="raw-in" placeholder="Pegue la lista aqu?..." oninput="toggleRun()"></textarea>
+                <button id="btn-run" class="btn-win btn-blue hidden display-none" onclick="processX()">EXTRAER ?LTIMOS 8 D?GITOS</button>
                 <div id="out-box" class="hidden display-none">
                     <textarea id="txt-out" readonly></textarea>
                     <button class="btn-win btn-green" style="margin-top:10px;" onclick="copyFinish()"><i class="fa-brands fa-whatsapp"></i> COPIAR HORIZONTAL</button>
@@ -125,19 +133,17 @@
 
     <script>
         let activeUser = "";
+        let typingTimer;
         const BD_AUTH = { "JBaltodano_Admin": "404471" };
         const BD_FAMILIA = [
-            { n: "Hilda (Mamá)", m: 1, d: 27 },
+            { n: "Hilda (Mam?)", m: 1, d: 27 },
             { n: "Hija", m: 0, d: 15 }
         ];
 
-        // SENSIBILIDAD IA LOGIN
-        let typingTimer;
         function resetInactivity() {
             clearTimeout(typingTimer);
-            // Solo activar si estamos en el login y no se ha logueado nadie
-            if(!document.getElementById('v-login').classList.contains('hidden') && activeUser === "") {
-                typingTimer = setTimeout(iaCheckStatus, 2000); // 2 segundos de inactividad
+            if(!document.getElementById('v-login').classList.contains('hidden')) {
+                typingTimer = setTimeout(iaCheckStatus, 2000); 
             }
         }
 
@@ -145,78 +151,103 @@
             const uVal = document.getElementById('u-in').value;
             const pVal = document.getElementById('p-in').value;
 
-            // Si hay algo escrito pero no es correcto tras 2 segundos
-            if((uVal.length > 0 && !BD_AUTH[uVal]) || (pVal.length > 0 && pVal !== BD_AUTH[activeUser])) {
-                document.getElementById('asis-msg').innerText = "IA: He detectado dificultades con el acceso.";
-                document.getElementById('ia-prompt').classList.remove('hidden', 'display-none');
+            if(activeUser === "" && uVal.length > 0 && !BD_AUTH[uVal]) {
+                showIAPrompt("IA: No reconozco ese usuario. ¿Necesitas ayuda?");
+            } 
+            else if (activeUser !== "" && pVal.length > 0 && pVal !== BD_AUTH[activeUser]) {
+                showIAPrompt("IA: Parece que el PIN no es correcto. ¿Deseas asistencia?");
             }
+        }
+
+        function showIAPrompt(msg) {
+            document.getElementById('asis-msg').innerText = msg;
+            document.getElementById('ia-prompt').classList.remove('hidden', 'display-none');
+        }
+
+        function cleanAsisUI() {
+            document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
+            document.getElementById('it-support').classList.add('hidden', 'display-none');
         }
 
         function enableITSupport() {
             document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
             document.getElementById('it-support').classList.remove('hidden', 'display-none');
-            document.getElementById('asis-msg').innerText = "IA: Botón de soporte habilitado abajo.";
+            document.getElementById('asis-msg').innerText = "IA: Soporte habilitado. Dale clic al bot?n azul.";
         }
 
         function closeIAPrompt() {
             document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
-            document.getElementById('asis-msg').innerText = "IA: Entendido. Reintente cuando esté listo.";
+            document.getElementById('asis-msg').innerText = "IA: Reintente su c?digo.";
+        }
+
+        function togglePinSee() {
+            const p = document.getElementById('p-in');
+            const eye = document.getElementById('pin-eye');
+            if(p.type === "password") {
+                p.type = "text";
+                eye.classList.add('active');
+            } else {
+                p.type = "password";
+                eye.classList.remove('active');
+            }
         }
 
         function iaIdentify(val) {
             resetInactivity();
-            const itBtn = document.getElementById('it-support');
-            const prompt = document.getElementById('ia-prompt');
-            
+            cleanAsisUI();
+            document.getElementById('asis-msg').innerText = "IA: Ingrese su identificaci?n.";
+
             if(BD_AUTH[val]) {
                 activeUser = val;
-                itBtn.classList.add('hidden', 'display-none');
-                prompt.classList.add('hidden', 'display-none');
-                document.getElementById('asis-msg').innerText = "IA: Usuario reconocido. Ingrese su PIN.";
+                document.getElementById('asis-msg').innerText = "IA: Identidad confirmada. Ingrese PIN.";
                 document.getElementById('bot-icon').classList.add('hidden');
                 document.getElementById('user-photo').classList.remove('hidden');
                 document.getElementById('u-in').classList.add('hidden');
-                document.getElementById('p-in').classList.remove('hidden').focus();
+                
+                // MEJORA: Mostrar contenedor y dar FOCO autom?tico
+                const pCont = document.getElementById('pin-container');
+                pCont.classList.remove('hidden', 'display-none');
+                document.getElementById('p-in').focus();
             }
         }
 
         function iaAuth(val) {
             resetInactivity();
-            if(val.length === 6) {
-                if(val === BD_AUTH[activeUser]) {
-                    document.getElementById('user-name').innerText = "Jose Alfredo";
-                    showView('v-welcome');
-                    iaFamilyLogic();
-                } else {
-                    // El timer de 2 segundos disparará el iaCheckStatus
-                }
+            cleanAsisUI();
+            document.getElementById('asis-msg').innerText = "IA: Validando PIN...";
+
+            if(val === BD_AUTH[activeUser]) {
+                document.getElementById('user-name').innerText = "Jose Alfredo";
+                showView('v-welcome');
+                iaFamilyLogic();
+            } 
+            else if (val.length >= 6) {
+                showIAPrompt("IA: PIN incorrecto.");
             }
         }
 
-        // WhatsApp con mensaje predeterminado
         function sendITWhatsApp() {
-            const msg = "Hola Jose Alfredo, tengo problemas con mi usuario o PIN de acceso al sistema JB. ¿Podrías ayudarme?";
+            const msg = "Hola Jose Alfredo, necesito ayuda con mi acceso al sistema JB.";
             window.open(`https://wa.me/50584386180?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // --- Funciones de motor, calendario y extractor (IDÉNTICAS A TU CÓDIGO FUNCIONAL) ---
         function iaFamilyLogic() {
             const now = new Date();
             const box = document.getElementById('ia-family-news');
-            let html = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Revisando eventos...</p>`;
+            let html = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Analizando agenda familiar...</p>`;
             let found = false;
             BD_FAMILIA.forEach(f => {
                 const bday = new Date(now.getFullYear(), f.m, f.d);
                 const diff = Math.ceil((bday - now) / (1000*60*60*24));
                 if(now.getMonth() === f.m && now.getDate() === f.d) {
-                    html += `<p style="color:var(--accent); font-weight:bold;">¡HOY! Es el cumpleaños de ${f.n}.</p>`;
+                    html += `<p style="color:var(--accent); font-weight:bold;">¡HOY! Es el cumplea?os de ${f.n}.</p>`;
                     found = true;
                 } else if(diff > 0 && diff <= 10) {
-                    html += `<p style="color:var(--error);">PRONTO: El cumpleaños de ${f.n} es en ${diff} días.</p>`;
+                    html += `<p style="color:var(--error);">PRONTO: El cumplea?os de ${f.n} es en ${diff} d?as.</p>`;
                     found = true;
                 }
             });
-            if(!found) html += `<p>No hay cumpleaños próximos en la familia.</p>`;
+            if(!found) html += `<p>No hay eventos pr?ximos.</p>`;
             box.innerHTML = html;
         }
 
