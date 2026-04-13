@@ -37,6 +37,15 @@
         .btn-win { width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
         .btn-blue { background: #0078d7; color: white; }
         .btn-green { background: #238636; color: white; }
+
+        /* CALENDARIO DINÁMICO */
+        .today-circle { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
+        .today-svg { position: absolute; transform: rotate(-90deg); width: 26px; height: 26px; }
+
+        /* BOTONES DE DECISIÓN IA */
+        .ia-decision-box { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-mini { padding: 5px 15px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; border: 1px solid var(--accent); background: none; color: white; }
+        .btn-mini:hover { background: var(--accent); color: black; }
     </style>
 </head>
 <body onmousemove="resetInactivity()" ontouchstart="resetInactivity()" onkeydown="resetInactivity()">
@@ -53,6 +62,14 @@
                 
                 <input type="text" id="u-in" placeholder="Usuario" oninput="iaIdentify(this.value)">
                 <input type="password" id="p-in" class="hidden" placeholder="PIN" oninput="iaAuth(this.value)">
+
+                <div id="ia-prompt" class="hidden display-none">
+                    <p style="font-size:0.8rem; margin:10px 0;">¿Deseas asistencia de IT?</p>
+                    <div class="ia-decision-box">
+                        <button class="btn-mini" onclick="enableITSupport()">SÍ</button>
+                        <button class="btn-mini" onclick="closeIAPrompt()">NO</button>
+                    </div>
+                </div>
 
                 <button id="it-support" class="btn-win btn-blue hidden display-none" style="margin-top:15px;" onclick="sendITWhatsApp()">
                     <i class="fa-brands fa-whatsapp"></i> Contactar Admin IT
@@ -107,78 +124,90 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN
         let activeUser = "";
         const BD_AUTH = { "JBaltodano_Admin": "404471" };
         const BD_FAMILIA = [
-            { n: "Hilda (Mamá)", m: 1, d: 27 }, // Feb 27
-            { n: "Hija", m: 0, d: 15 } // Enero
+            { n: "Hilda (Mamá)", m: 1, d: 27 },
+            { n: "Hija", m: 0, d: 15 }
         ];
 
-        // MONITOR DE INACTIVIDAD
-        let idleTime;
+        // SENSIBILIDAD IA LOGIN
+        let typingTimer;
         function resetInactivity() {
-            clearTimeout(idleTime);
-            if(!document.getElementById('v-login').classList.contains('hidden')) {
-                idleTime = setTimeout(iaHelpOffer, 5000); // 5 seg
+            clearTimeout(typingTimer);
+            // Solo activar si estamos en el login y no se ha logueado nadie
+            if(!document.getElementById('v-login').classList.contains('hidden') && activeUser === "") {
+                typingTimer = setTimeout(iaCheckStatus, 2000); // 2 segundos de inactividad
             }
         }
 
-        function iaHelpOffer() {
-            if(activeUser === "") {
-                document.getElementById('asis-msg').innerText = "IA: ¿Necesitas ayuda? Puedes contactar al Admin IT.";
-                document.getElementById('it-support').classList.remove('hidden', 'display-none');
+        function iaCheckStatus() {
+            const uVal = document.getElementById('u-in').value;
+            const pVal = document.getElementById('p-in').value;
+
+            // Si hay algo escrito pero no es correcto tras 2 segundos
+            if((uVal.length > 0 && !BD_AUTH[uVal]) || (pVal.length > 0 && pVal !== BD_AUTH[activeUser])) {
+                document.getElementById('asis-msg').innerText = "IA: He detectado dificultades con el acceso.";
+                document.getElementById('ia-prompt').classList.remove('hidden', 'display-none');
             }
         }
 
-        // LOGIN IA DINÁMICO
+        function enableITSupport() {
+            document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
+            document.getElementById('it-support').classList.remove('hidden', 'display-none');
+            document.getElementById('asis-msg').innerText = "IA: Botón de soporte habilitado abajo.";
+        }
+
+        function closeIAPrompt() {
+            document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
+            document.getElementById('asis-msg').innerText = "IA: Entendido. Reintente cuando esté listo.";
+        }
+
         function iaIdentify(val) {
+            resetInactivity();
             const itBtn = document.getElementById('it-support');
+            const prompt = document.getElementById('ia-prompt');
+            
             if(BD_AUTH[val]) {
                 activeUser = val;
-                itBtn.classList.add('hidden', 'display-none'); // Ocultar si es correcto
+                itBtn.classList.add('hidden', 'display-none');
+                prompt.classList.add('hidden', 'display-none');
                 document.getElementById('asis-msg').innerText = "IA: Usuario reconocido. Ingrese su PIN.";
                 document.getElementById('bot-icon').classList.add('hidden');
                 document.getElementById('user-photo').classList.remove('hidden');
                 document.getElementById('u-in').classList.add('hidden');
                 document.getElementById('p-in').classList.remove('hidden').focus();
-            } else if (val.length > 0) {
-                itBtn.classList.add('hidden', 'display-none'); // Ocultar mientras escribe
             }
         }
 
         function iaAuth(val) {
-            const itBtn = document.getElementById('it-support');
-            if(val.length > 0) itBtn.classList.add('hidden', 'display-none');
-
+            resetInactivity();
             if(val.length === 6) {
                 if(val === BD_AUTH[activeUser]) {
                     document.getElementById('user-name').innerText = "Jose Alfredo";
                     showView('v-welcome');
                     iaFamilyLogic();
                 } else {
-                    document.getElementById('asis-msg').innerText = "IA: PIN incorrecto. ¿Deseas asistencia?";
-                    itBtn.classList.remove('hidden', 'display-none');
+                    // El timer de 2 segundos disparará el iaCheckStatus
                 }
             }
         }
 
+        // WhatsApp con mensaje predeterminado
         function sendITWhatsApp() {
-            const msg = "Hola Admin IT (8438-6180), solicito ayuda con mi acceso al sistema JB.";
+            const msg = "Hola Jose Alfredo, tengo problemas con mi usuario o PIN de acceso al sistema JB. ¿Podrías ayudarme?";
             window.open(`https://wa.me/50584386180?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
-        // IA FAMILIAR
+        // --- Funciones de motor, calendario y extractor (IDÉNTICAS A TU CÓDIGO FUNCIONAL) ---
         function iaFamilyLogic() {
             const now = new Date();
             const box = document.getElementById('ia-family-news');
             let html = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Revisando eventos...</p>`;
-            
             let found = false;
             BD_FAMILIA.forEach(f => {
                 const bday = new Date(now.getFullYear(), f.m, f.d);
                 const diff = Math.ceil((bday - now) / (1000*60*60*24));
-
                 if(now.getMonth() === f.m && now.getDate() === f.d) {
                     html += `<p style="color:var(--accent); font-weight:bold;">¡HOY! Es el cumpleaños de ${f.n}.</p>`;
                     found = true;
@@ -187,32 +216,27 @@
                     found = true;
                 }
             });
-
             if(!found) html += `<p>No hay cumpleaños próximos en la familia.</p>`;
             box.innerHTML = html;
         }
 
-        // MOTOR EXTRACTOR
         function initEngine() {
             const ctx = document.getElementById('progCanvas').getContext('2d');
             setInterval(() => {
                 const now = new Date();
                 const h = now.getHours(), m = now.getMinutes(), day = now.getDay();
                 document.getElementById('d-time').innerText = now.toLocaleTimeString();
-
-                let start = 7, end = (day >= 2 && day <= 4) ? 18 : 17; // L-V
-
+                let start = 7, end = (day >= 2 && day <= 4) ? 18 : 17;
                 ctx.clearRect(0,0,170,170);
                 ctx.beginPath(); ctx.arc(85,85,80,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=8; ctx.stroke();
-                
                 let p = 0;
                 if(h >= start && h < end) p = ((h-start)*3600 + m*60) / ((end-start)*3600);
                 else if(h >= end) p = 1;
-
                 ctx.beginPath(); ctx.arc(85,85,80,0,p*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.stroke();
                 if(h === end && m === 0) document.getElementById('alarm-info').innerText = "FIN DE JORNADA";
+                drawCal(p);
             }, 1000);
-            drawCal();
+            drawCal(0);
         }
 
         function toggleRun() {
@@ -222,7 +246,6 @@
 
         function processX() {
             const raw = document.getElementById('raw-in').value.split('\n');
-            // Lógica 8 dígitos horizontal
             const clean = raw.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
             document.getElementById('txt-out').value = clean.join(' ');
             document.getElementById('out-box').classList.remove('hidden', 'display-none');
@@ -240,11 +263,18 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function drawCal() {
+        function drawCal(progress) {
             const d = new Date();
-            document.getElementById('cal-ui').innerHTML = `<div style="text-align:center; color:var(--accent); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">ABRIL 2026</div><div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem;">` + 
-            "DLMMJVS".split('').map(l => `<span>${l}</span>`).join('') + 
-            Array.from({length:30}, (_,i) => `<span style="${i+1===d.getDate()?'color:var(--accent); font-weight:bold;':''}">${i+1}</span>`).join('') + "</div>";
+            const dash = progress * 75;
+            let html = `<div style="text-align:center; color:var(--accent); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">ABRIL 2026</div><div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem;">`;
+            html += "DLMMJVS".split('').map(l => `<span>${l}</span>`).join('');
+            for(let i=1; i<=30; i++) {
+                if(i === d.getDate()) {
+                    html += `<span class="today-circle"><svg class="today-svg" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#1a2026" stroke-width="2"/><circle cx="15" cy="15" r="12" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="${dash} 75" /></svg><b style="color:var(--accent); position:relative; z-index:2;">${i}</b></span>`;
+                } else { html += `<span>${i}</span>`; }
+            }
+            html += "</div>";
+            document.getElementById('cal-ui').innerHTML = html;
         }
     </script>
 </body>
