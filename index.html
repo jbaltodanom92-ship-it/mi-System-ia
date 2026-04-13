@@ -3,265 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extractor Profesional de Código - Sistema IA</title>
+    <title>Sistema IA - Jose Alfredo B.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg: #0a1929; --card: rgba(22, 27, 34, 0.9); --accent: #007bff; --text: #c9d1d9; --warn: #ffca28; --futuristic: #00f2ff;
+            --bg: #03080f; 
+            --card: rgba(13, 17, 23, 0.95); 
+            --accent: #00f2ff; 
+            --text: #c9d1d9; 
+            --panel-bg: #161b22;
         }
         body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: var(--bg); color: var(--text); }
-        #canvas { position: fixed; top: 0; left: 0; z-index: -1; background: var(--bg); }
+        
+        /* --- FONDO EFECTO MATRIX (CIAN) --- */
+        #canvasMatrix { position: fixed; top: 0; left: 0; z-index: -1; }
+
         .container { 
-            background: var(--card); backdrop-filter: blur(10px);
+            background: var(--card); backdrop-filter: blur(15px);
             padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; 
-            text-align: center; box-shadow: 0 0 20px rgba(0,242,255,0.2); 
+            text-align: center; box-shadow: 0 0 40px rgba(0,242,255,0.15); 
             border: 1px solid #30363d;
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
         }
-        #entorno-trabajo { max-width: 850px; }
+
+        /* --- PANEL DE TRABAJO COMPLETO (SEGÚN TUS CAPTURAS) --- */
+        #menu-pestañas { width: 100%; height: 100%; overflow-y: auto; position: relative; }
         .grid-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px; padding: 20px; width: 95%; max-width: 800px; margin: 80px auto 0 auto;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px; padding: 20px; width: 90%; max-width: 1000px; margin: 80px auto 0 auto;
         }
         .tile {
-            background: rgba(31, 41, 55, 0.8); backdrop-filter: blur(5px);
-            border-left: 4px solid var(--futuristic); border-radius: 8px; padding: 20px; 
-            color: #fff; text-align: left; cursor: pointer; transition: 0.3s;
+            background: var(--panel-bg); border-left: 4px solid var(--accent); border-radius: 8px; 
+            padding: 25px; color: #fff; cursor: pointer; transition: 0.3s; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: left;
         }
-        .tile:hover { transform: translateX(5px); background: #2d3748; box-shadow: 0 0 15px var(--futuristic); }
-        .tile i { font-size: 1.5rem; color: var(--futuristic); margin-bottom: 10px; display: block; }
-        input, textarea { width: 100%; box-sizing: border-box; padding: 14px; margin: 10px 0; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; text-align: center; }
-        button { width: 100%; background: var(--accent); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .badge-cumple { background: #238636; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+        .tile:hover { transform: translateY(-5px); box-shadow: 0 0 25px var(--accent); background: #1c2128; }
+        .tile i { font-size: 2rem; color: var(--accent); margin-bottom: 15px; display: block; }
+        .tile span { font-size: 0.95rem; font-weight: bold; line-height: 1.3; display: block; }
+
+        /* --- ELEMENTOS DE FORMULARIO --- */
+        input, textarea { width: 100%; box-sizing: border-box; padding: 14px; margin: 10px 0; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; }
+        button { width: 100%; background: #007bff; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.2s; }
+        button:hover { filter: brightness(1.2); }
         .hidden { display: none !important; }
+
+        /* --- LAYOUT DEL EXTRACTOR (BOCETO FIEL) --- */
+        #entorno-trabajo { max-width: 850px; text-align: left; }
+        .layout-extractor { display: flex; gap: 30px; align-items: flex-start; }
+        .col-reloj { flex: 0 0 220px; text-align: center; }
+        .col-main { flex: 1; }
+        
+        #calendario-mini { 
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 0.7rem; 
+            margin-top: 15px; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px solid #30363d;
+        }
+        .dia-actual { background: var(--accent); color: #000; border-radius: 50%; font-weight: bold; width: 1.3rem; height: 1.3rem; margin: auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--accent); }
+        .header-mes { grid-column: span 7; color: var(--accent); font-weight: bold; margin-bottom: 8px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas"></canvas>
+    <canvas id="canvasMatrix"></canvas>
 
     <div id="login-flow" class="container">
-        <h2 style="color: var(--futuristic)">LOGIN IA</h2>
-        <div id="asistente-ia">IA: Por favor, escribe tu nombre de usuario.</div>
+        <h2 style="color: var(--accent)">LOGIN IA</h2>
+        <div id="asis-log">IA: Ingrese su nombre de usuario.</div>
         <div id="step-user">
             <input type="text" id="user-input" placeholder="Usuario" oninput="validarUser(this.value)">
             <button id="btn-next-user" class="hidden" onclick="irAlPin()">Siguiente</button>
         </div>
         <div id="step-pin" class="hidden">
-            <input type="password" id="pin-input" placeholder="PIN" oninput="validarPin(this.value)">
-            <button id="btn-login" class="hidden" onclick="irABienvenida()">Ingresar</button>
+            <input type="password" id="pin-input" placeholder="Introduce tu PIN" oninput="validarPin(this.value)">
+            <button id="btn-login" class="hidden" onclick="irAlMenu()">Ingresar al Sistema</button>
         </div>
     </div>
 
-    <div id="bienvenida-ia" class="container hidden">
-        <h2 id="ia-title">Asistente Virtual</h2>
-        <p id="msg-bienvenida"></p>
-        <div id="area-notificaciones"></div>
-        <button onclick="verificarRutas()">Manos a la obra</button>
-    </div>
-
     <div id="menu-pestañas" class="hidden">
-        <h3 style="color: var(--futuristic); text-align:center; margin-top:40px;">Panel de Control</h3>
-        <div id="lista-botones" class="grid-container"></div>
-        <div style="text-align:center;"><button style="background:#30363d; width:200px;" onclick="location.reload()">Cerrar Sesión</button></div>
+        <h3 style="color: var(--accent); text-align:center; margin-top:60px; font-size: 1.8rem;">Panel de Trabajo</h3>
+        <div id="lista-botones" class="grid-container">
+            </div>
+        <div style="text-align:center; margin: 40px 0;">
+            <button style="background:#30363d; width:200px;" onclick="location.reload()">Cerrar Sesión</button>
+        </div>
     </div>
 
     <div id="entorno-trabajo" class="container hidden">
-        <h3 id="workspace-name" style="color: var(--futuristic)">Herramienta</h3>
+        <h3 id="workspace-name" style="color: var(--accent); text-align:center; margin-bottom: 25px;"></h3>
         <div id="contenido-herramienta"></div>
-        <button id="btn-prueba-voz" class="hidden" style="background:var(--warn); color:black;" onclick="probarAlertas()">Probar Alertas de Voz</button>
-        <button style="background:#30363d; margin-top:20px;" onclick="volverAlMenu()">Volver al Menú</button>
+        <button style="background:#30363d; margin-top:30px; width:100%;" onclick="volverAlMenu()">Volver al Menú Principal</button>
     </div>
 
     <script>
+        // DATOS INTEGRADOS DE TUS CAPTURAS Y PERFIL
         const db = {
-            "JBaltodano_Admin": { pin: "404471", cargo: "Admin", permisos: ["Extractor de Codigo", "Configuraciones", "Usuarios"], iconos: ["fa-code", "fa-gears", "fa-user-shield"], cumpleHoy: true },
-            "QA_Auditor": { pin: "5678", cargo: "Auditor", permisos: ["QA Reports"], iconos: ["fa-clipboard-check"], cumpleHoy: false }
+            "JBaltodano_Admin": { 
+                pin: "404471", 
+                permisos: [
+                    "Extractor de Codigo de Caja para Kohl's", 
+                    "QA Reports for Weekly Issues", 
+                    "Cumpleañeros", 
+                    "Usuarios", 
+                    "Configuraciones"
+                ],
+                iconos: ["fa-code", "fa-file-medical", "fa-cake-candles", "fa-user-shield", "fa-gears"]
+            }
         };
 
         let userActivo = "";
-        let horaAlmuerzoSemanal = null;
-        let horaSalidaSabado = null;
-
-        // --- FUNCIONES DE LOGIN ---
-        function validarUser(val) {
-            if(db[val]) {
-                userActivo = val;
-                document.getElementById('asistente-ia').innerText = `IA: Hola ${val.split('_')[0]}.`;
-                document.getElementById('btn-next-user').classList.remove('hidden');
-            }
-        }
-        function irAlPin() {
-            document.getElementById('step-user').classList.add('hidden');
-            document.getElementById('step-pin').classList.remove('hidden');
-            document.getElementById('asistente-ia').innerText = "IA: Ingresa tu PIN.";
-        }
-        function validarPin(pin) {
-            if(db[userActivo].pin === pin) document.getElementById('btn-login').classList.remove('hidden');
-        }
-        function irABienvenida() {
-            document.getElementById('login-flow').classList.add('hidden');
-            document.getElementById('bienvenida-ia').classList.remove('hidden');
-            document.getElementById('msg-bienvenida').innerText = `Listo para trabajar, ${userActivo.split('_')[0]}.`;
-        }
 
         // --- NAVEGACIÓN ---
-        function verificarRutas() {
-            const u = db[userActivo];
-            document.getElementById('bienvenida-ia').classList.add('hidden');
+        function validarUser(v) { if(db[v]) { userActivo = v; document.getElementById('btn-next-user').classList.remove('hidden'); } }
+        function irAlPin() { document.getElementById('step-user').classList.add('hidden'); document.getElementById('step-pin').classList.remove('hidden'); }
+        function validarPin(p) { if(db[userActivo].pin === p) document.getElementById('btn-login').classList.remove('hidden'); }
+
+        function irAlMenu() {
+            document.getElementById('login-flow').classList.add('hidden');
             document.getElementById('menu-pestañas').classList.remove('hidden');
             const lista = document.getElementById('lista-botones');
             lista.innerHTML = "";
-            u.permisos.forEach((p, i) => {
-                lista.innerHTML += `<div class="tile" onclick="abrirHerramienta('${p}')"><i class="fa-solid ${u.iconos[i]}"></i><span>${p}</span></div>`;
+            db[userActivo].permisos.forEach((p, i) => {
+                lista.innerHTML += `
+                    <div class="tile" onclick="abrirHerramienta('${p}')">
+                        <i class="fa-solid ${db[userActivo].iconos[i]}"></i>
+                        <span>${p}</span>
+                    </div>`;
             });
         }
 
+        // --- LÓGICA DEL EXTRACTOR (CORREGIDA AL 100% SEGÚN BOCETO) ---
         function abrirHerramienta(nombre) {
             document.getElementById('menu-pestañas').classList.add('hidden');
             document.getElementById('entorno-trabajo').classList.remove('hidden');
             document.getElementById('workspace-name').innerText = nombre;
             const panel = document.getElementById('contenido-herramienta');
-            
+
             if (nombre.includes("Extractor")) {
-                document.getElementById('btn-prueba-voz').classList.remove('hidden');
                 panel.innerHTML = `
-                    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                        <div style="flex: 1; min-width: 200px;">
-                            <canvas id="canvasReloj" width="120" height="120"></canvas>
-                            <div id="hora-digital" style="color: var(--futuristic); font-weight: bold; margin-top: -70px; margin-bottom: 50px;"></div>
+                    <div class="layout-extractor">
+                        <div class="col-reloj">
+                            <canvas id="canvasReloj" width="130" height="130"></canvas>
+                            <div id="hora-digital" style="color: var(--accent); font-weight: bold; font-size: 1.1rem; margin-top: 10px;"></div>
+                            
+                            <div id="calendario-mini">
+                                <div class="header-mes">Abril 2026</div>
+                                <span style="font-weight:bold">D</span><span style="font-weight:bold">L</span><span style="font-weight:bold">M</span><span style="font-weight:bold">M</span><span style="font-weight:bold">J</span><span style="font-weight:bold">V</span><span style="font-weight:bold">S</span>
+                                ${Array.from({length:30}, (_,i) => `<span class="${i+1 === 13 ? 'dia-actual' : ''}">${i+1}</span>`).join('')}
+                            </div>
                         </div>
-                        <div style="flex: 2;">
-                            <textarea id="inputCodigo" placeholder="Pega el código aquí..." oninput="verificarContenido()"></textarea>
-                            <button id="btn-extraer" class="hidden" onclick="procesarCodigo()">Extraer Últimos 8 Caracteres</button>
-                            <div id="seccion-resultados" class="hidden">
-                                <textarea id="outputResultados" readonly style="background:#161b22; color:#00f2ff; border: 1px solid #238636;"></textarea>
-                                <button onclick="copiarYLimpiar()" style="background:#238636;"><i class="fa-brands fa-whatsapp"></i> Copiar Resultados</button>
+                        <div class="col-main">
+                            <textarea id="inputCodigo" placeholder="Pega Código Aquí" style="height: 140px;" oninput="revisarInput()"></textarea>
+                            <button id="btn-extraer" class="hidden" onclick="ejecutarExtraccion()">Extraer Código</button>
+                            
+                            <div id="area-resultados" class="hidden">
+                                <p style="font-size: 0.8rem; color: var(--accent); margin: 15px 0 5px;">Resultados:</p>
+                                <textarea id="outputRes" readonly style="height: 110px; border-color: #238636; color: #aff5b4;"></textarea>
+                                <button onclick="copiarYLimpiarTodo()" style="background:#238636;"><i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar Campos</button>
                             </div>
                         </div>
                     </div>`;
-                setTimeout(iniciarRelojProgresivo, 100);
-            }
-        }
-
-        // --- RELOJ, JORNADA Y ALARMAS ---
-        function obtenerNumeroSemana() {
-            const d = new Date();
-            const tdt = new Date(d.valueOf());
-            const dayn = (d.getDay() + 6) % 7;
-            tdt.setDate(tdt.getDate() - dayn + 3);
-            const firstThursday = tdt.valueOf();
-            tdt.setMonth(0, 1);
-            if (tdt.getDay() !== 4) tdt.setMonth(0, 1 + ((4 - tdt.getDay()) + 7) % 7);
-            return 1 + Math.ceil((firstThursday - tdt) / 604800000);
-        }
-
-        function verificarCronogramaSemanal() {
-            const numSem = obtenerNumeroSemana();
-            const hoy = new Date();
-            const dia = hoy.getDay();
-            const key = `almuerzo_${userActivo}_Sem${numSem}`;
-            
-            let guardado = localStorage.getItem(key);
-            if(guardado) {
-                horaAlmuerzoSemanal = guardado;
+                iniciarReloj();
             } else {
-                const h = prompt("IA: ¿A qué hora almorzarás esta semana? (Ej: 12:30)");
-                if(h) { localStorage.setItem(key, h); horaAlmuerzoSemanal = h; hablar("Horario de almuerzo guardado para la semana."); }
-            }
-
-            if(dia === 6) {
-                const hSab = prompt("IA: ¿A qué hora sales hoy Sábado? (Ej: 12:00 o 15:00)");
-                if(hSab) { horaSalidaSabado = hSab; hablar(`Hoy salimos a las ${hSab}.`); }
+                panel.innerHTML = `<p style="text-align:center; padding: 50px;">Módulo <b>${nombre}</b> cargado correctamente. Próximamente funciones adicionales.</p>`;
             }
         }
 
-        function iniciarRelojProgresivo() {
-            const canvasR = document.getElementById('canvasReloj');
-            if(!canvasR) return;
-            const ctxR = canvasR.getContext('2d');
-            verificarCronogramaSemanal();
+        function revisarInput() {
+            document.getElementById('btn-extraer').classList.toggle('hidden', document.getElementById('inputCodigo').value.trim() === "");
+        }
 
+        function ejecutarExtraccion() {
+            const input = document.getElementById('inputCodigo').value;
+            const lineas = input.split('\n');
+            // Extraer solo últimos 8 caracteres (según corrección de hoy)
+            const filtrado = lineas.filter(l => l.trim().length >= 8).map(l => l.trim().slice(-8)).join('\n');
+            document.getElementById('outputRes').value = filtrado;
+            document.getElementById('area-resultados').classList.remove('hidden');
+        }
+
+        function copiarYLimpiarTodo() {
+            navigator.clipboard.writeText(document.getElementById('outputRes').value);
+            // Limpieza total según boceto
+            document.getElementById('inputCodigo').value = "";
+            document.getElementById('area-resultados').classList.add('hidden');
+            document.getElementById('btn-extraer').classList.add('hidden');
+            alert("Contenido copiado. Se han limpiado los campos.");
+        }
+
+        // --- RELOJ CON SEGUNDOS Y PROGRESO ---
+        function iniciarReloj() {
             setInterval(() => {
                 const ahora = new Date();
-                const dia = ahora.getDay();
-                let hInicio = 7, hSalida;
-
-                if(dia === 6) hSalida = horaSalidaSabado ? parseInt(horaSalidaSabado) : 12;
-                else if(dia === 1 || dia === 5) hSalida = 17;
-                else hSalida = 18;
-
-                ctxR.clearRect(0,0,120,120);
-                ctxR.beginPath(); ctxR.arc(60,60,50,0,2*Math.PI); ctxR.strokeStyle="#161b22"; ctxR.lineWidth=8; ctxR.stroke();
+                const can = document.getElementById('canvasReloj');
+                if(!can) return;
+                const ctx = can.getContext('2d');
+                ctx.clearRect(0,0,130,130);
                 
-                let pct = (ahora.getHours() + ahora.getMinutes()/60 - hInicio) / (hSalida - hInicio);
-                pct = Math.min(Math.max(pct, 0), 1);
-                ctxR.beginPath(); ctxR.arc(60,60,50,-Math.PI/2, -Math.PI/2 + 2*Math.PI*pct); ctxR.strokeStyle="#00f2ff"; ctxR.stroke();
-                document.getElementById('hora-digital').innerText = ahora.toLocaleTimeString([],{hour:'2-digit', minute:'2-digit'});
-
-                // Lógica de Alarma
-                const minHoy = ahora.getHours()*60 + ahora.getMinutes();
-                if(minHoy === (hSalida*60 - 15)) hablar("Atención, faltan quince minutos para finalizar tu jornada.");
+                // Fondo círculo
+                ctx.beginPath(); ctx.arc(65,65,55,0,2*Math.PI); ctx.strokeStyle="#161b22"; ctx.lineWidth=8; ctx.stroke();
                 
-                if(horaAlmuerzoSemanal && (dia !== 6 || (dia === 6 && hSalida >= 14))) {
-                    const [ha, ma] = horaAlmuerzoSemanal.split(':').map(Number);
-                    if(minHoy === (ha*60 + ma - 15)) hablar("Prepárate, faltan quince minutos para tu hora de almuerzo.");
+                // Progreso Jornada (8am a 5pm)
+                let h = ahora.getHours() + ahora.getMinutes()/60 + ahora.getSeconds()/3600;
+                let pct = (h - 8) / 9; 
+                ctx.beginPath(); ctx.arc(65,65,55,-Math.PI/2, -Math.PI/2 + 2*Math.PI*Math.min(Math.max(pct,0),1));
+                ctx.strokeStyle= "#00f2ff"; ctx.stroke();
+                
+                document.getElementById('hora-digital').innerText = ahora.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+                
+                // ALARMA (4:45 PM -> 15 min antes de salir)
+                if(ahora.getHours() === 16 && ahora.getMinutes() === 45 && ahora.getSeconds() === 0) {
+                    hablar("Atención Jose, faltan quince minutos para finalizar tu jornada.");
                 }
             }, 1000);
         }
 
-        // --- UTILIDADES ---
-        function hablar(msg) {
-            const u = new SpeechSynthesisUtterance(msg);
+        function hablar(m) {
+            const u = new SpeechSynthesisUtterance(m);
             u.lang = 'es-MX';
             window.speechSynthesis.speak(u);
         }
 
-        function probarAlertas() {
-            hablar("Probando sistema. Alerta de almuerzo y salida funcionando.");
+        // --- EFECTO MATRIX CIÁN ---
+        const matrix = document.getElementById("canvasMatrix");
+        const mctx = matrix.getContext("2d");
+        function resize() { matrix.width = window.innerWidth; matrix.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        const letters = "01010101CODEEXTRACTOR";
+        const fontSize = 15;
+        const columns = Array(Math.floor(matrix.width/fontSize)).fill(1);
+        function draw() {
+            mctx.fillStyle = "rgba(3, 8, 15, 0.15)"; mctx.fillRect(0,0,matrix.width,matrix.height);
+            mctx.fillStyle = "#00f2ff22"; mctx.font = fontSize + "px monospace";
+            columns.forEach((y, i) => {
+                const text = letters[Math.floor(Math.random()*letters.length)];
+                mctx.fillText(text, i*fontSize, y*fontSize);
+                if(y*fontSize > matrix.height && Math.random() > 0.975) columns[i] = 0;
+                columns[i]++;
+            });
         }
-
-        function verificarContenido() {
-            document.getElementById('btn-extraer').classList.toggle('hidden', document.getElementById('inputCodigo').value.trim() === "");
-        }
-
-        function procesarCodigo() {
-            const input = document.getElementById('inputCodigo').value;
-            const lineas = input.split('\n');
-            let result = lineas.filter(l => l.trim().length >= 8).map(l => l.trim().slice(-8)).join('\n');
-            document.getElementById('outputResultados').value = result;
-            document.getElementById('seccion-resultados').classList.remove('hidden');
-        }
-
-        function copiarYLimpiar() {
-            navigator.clipboard.writeText(document.getElementById('outputResultados').value);
-            alert("Copiado.");
-            document.getElementById('inputCodigo').value = "";
-            document.getElementById('seccion-resultados').classList.add('hidden');
-        }
+        setInterval(draw, 50);
 
         function volverAlMenu() {
             document.getElementById('entorno-trabajo').classList.add('hidden');
             document.getElementById('menu-pestañas').classList.remove('hidden');
         }
-
-        // --- FONDO ANIMADO ---
-        const cvs = document.getElementById('canvas');
-        const cx = cvs.getContext('2d');
-        function resz() { cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
-        window.addEventListener('resize', resz); resz();
-        let pts = Array.from({length:60}, () => ({x:Math.random()*cvs.width, y:Math.random()*cvs.height, sx:Math.random()-0.5, sy:Math.random()-0.5}));
-        function anim() {
-            cx.clearRect(0,0,cvs.width,cvs.height);
-            pts.forEach(p => {
-                p.x+=p.sx; p.y+=p.sy;
-                if(p.x<0||p.x>cvs.width) p.sx*=-1; if(p.y<0||p.y>cvs.height) p.sy*=-1;
-                cx.fillStyle="rgba(0,242,255,0.3)"; cx.beginPath(); cx.arc(p.x,p.y,2,0,Math.PI*2); cx.fill();
-            });
-            requestAnimationFrame(anim);
-        }
-        anim();
     </script>
 </body>
 </html>
