@@ -5,55 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extractor Profesional de Código</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg: #0d1117; --card: #161b22; --accent: #007bff; --text: #c9d1d9; --warn: #ffca28; --futuristic: #00f2ff;
+            --bg: #0a1929; --card: rgba(22, 27, 34, 0.9); --accent: #007bff; --text: #c9d1d9; --warn: #ffca28; --futuristic: #00f2ff;
         }
-        body, html { height: 100%; margin: 0; display: flex; justify-content: center; align-items: center; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        .container { background: var(--card); padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 20px rgba(0,242,255,0.2); border: 1px solid #30363d; }
+        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: var(--bg); color: var(--text); }
         
-        input { width: 100%; box-sizing: border-box; padding: 14px; margin: 10px 0; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; text-align: center; font-size: 1rem; }
-        input:focus { border-color: var(--futuristic); outline: none; }
+        /* Fondo de partículas */
+        #canvas { position: fixed; top: 0; left: 0; z-index: -1; background: var(--bg); }
 
+        .container { 
+            background: var(--card); backdrop-filter: blur(10px);
+            padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; 
+            text-align: center; box-shadow: 0 0 20px rgba(0,242,255,0.2); 
+            border: 1px solid #30363d;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+
+        .grid-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; padding: 20px; width: 95%; max-width: 800px; margin: 80px auto 0 auto;
+        }
+
+        .tile {
+            background: rgba(31, 41, 55, 0.8); backdrop-filter: blur(5px);
+            border-left: 4px solid var(--futuristic); border-radius: 8px; padding: 20px; 
+            color: #fff; text-align: left; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .tile:hover { transform: translateX(5px); background: #2d3748; box-shadow: 0 0 15px var(--futuristic); }
+        .tile i { font-size: 1.5rem; color: var(--futuristic); margin-bottom: 10px; display: block; }
+        .tile span { font-size: 0.9rem; font-weight: bold; }
+
+        input { width: 100%; box-sizing: border-box; padding: 14px; margin: 10px 0; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; text-align: center; }
         button { width: 100%; background: var(--accent); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { box-shadow: 0 0 15px var(--accent); }
-
-        /* Botones Inteligentes Futuristas */
-        .btn-menu { background: #1f2937; border-left: 4px solid var(--futuristic); margin: 8px 0; text-align: left; padding: 15px; font-size: 0.9rem; }
-        .btn-menu:hover { background: #2d3748; transform: translateX(5px); }
-
-        .btn-wa { background: transparent; color: var(--warn); border: 1px solid var(--warn); margin-top: 10px; font-size: 0.85em; display: none; }
-        #asistente-ia { color: var(--warn); margin: 15px 0; min-height: 45px; font-style: italic; font-size: 0.95rem; }
-        .hidden { display: none; }
         
-        .badge-cumple { background: #238636; color: white; padding: 10px; border-radius: 8px; margin: 15px 0; animation: pulse 2s infinite; }
+        .badge-cumple { background: #238636; color: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
-        .progress-box { position: relative; width: 80px; height: 80px; display: inline-block; }
-        .progress-box svg { transform: rotate(-90deg); }
-        .bg-circle { fill: none; stroke: #30363d; stroke-width: 5; }    
-        .fg-circle { 
-        fill: none; stroke: #00f2ff; stroke-width: 5; 
-        stroke-dasharray: 220; stroke-dashoffset: 220; 
-        stroke-linecap: round; transition: 1s; 
-        }   
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
+    <canvas id="canvas"></canvas>
+
     <div id="login-flow" class="container">
         <h2 style="color: var(--futuristic)">LOGIN IA</h2>
         <div id="asistente-ia">IA: Por favor, escribe tu nombre de usuario.</div>
-
         <div id="step-user">
-            <input type="text" id="user-input" placeholder="Nombre de Usuario" oninput="validarUser(this.value)">
+            <input type="text" id="user-input" placeholder="Usuario" oninput="validarUser(this.value)">
             <button id="btn-next-user" class="hidden" onclick="irAlPin()">Siguiente</button>
-            <button id="wa-user" class="btn-wa" onclick="soporte('usuario')">Recuperar Usuario vía WhatsApp</button>
         </div>
-
         <div id="step-pin" class="hidden">
             <input type="password" id="pin-input" placeholder="Introduce tu PIN" oninput="validarPin(this.value)">
             <button id="btn-login" class="hidden" onclick="irABienvenida()">Ingresar al Sistema</button>
-            <button id="wa-pin" class="btn-wa" onclick="soporte('PIN')">Recuperar PIN vía WhatsApp</button>
         </div>
     </div>
 
@@ -64,66 +71,45 @@
         <button onclick="verificarRutas()">Manos a la obra</button>
     </div>
 
-    <div id="menu-pestañas" class="container hidden">
-        <h3 style="color: var(--futuristic)">Panel de Trabajo</h3>
-        <p style="font-size: 0.8rem; color: #8b949e;">Selecciona la pestaña de destino:</p>
-        <div id="lista-botones">
-            </div>
-        <button style="background:#30363d; margin-top:20px;" onclick="location.reload()">Cerrar Sesión</button>
+    <div id="menu-pestañas" class="hidden">
+        <h3 style="color: var(--futuristic); text-align:center; margin-top:40px;">Panel de Trabajo</h3>
+        <div id="lista-botones" class="grid-container"></div>
+        <div style="text-align:center;">
+            <button style="background:#30363d; width:200px; margin-top:20px;" onclick="location.reload()">Cerrar Sesión</button>
+        </div>
     </div>
 
     <div id="entorno-trabajo" class="container hidden">
-        <h3 id="workspace-name">Herramienta</h3>
-        <textarea id="inputCodigo" placeholder="Pegar datos aquí..." style="width:100%; height:100px; background:#0d1117; color:white; border:1px solid #333; padding:10px;"></textarea>
-        <div id="resultado" style="margin:15px 0; padding:10px; border:1px dashed #444; min-height:30px; font-size:0.85rem;"></div>
-        <div id="entorno-trabajo" class="container hidden">
-    <h3 id="workspace-name" style="color: var(--futuristic)">Herramienta</h3>
-    
-    <div id="contenido-herramienta"></div>
-
-    <button style="background:#30363d; margin-top:20px;" onclick="volverAlMenu()">Volver al Menú Principal</button>
-</div>
-        <button onclick="copiarYLimpiar()">Copiar para WhatsApp</button>
-        <button style="background:#30363d;" onclick="volverAlMenu()">Volver al Menú</button>
+        <h3 id="workspace-name" style="color: var(--futuristic)">Herramienta</h3>
+        <div id="contenido-herramienta"></div>
+        <button style="background:#30363d; margin-top:20px;" onclick="volverAlMenu()">Volver al Menú Principal</button>
     </div>
 
     <script>
-        // BASE DE DATOS EXACTA DE ANOCHE
         const db = {
             "JBaltodano_Admin": { 
-                pin: "404471", 
-                cargo: "Admin", 
-                genero: "masculino",
+                pin: "404471", cargo: "Admin",
                 permisos: ["Extractor de Codigo de Caja para Kohl's", "QA Reports for Weekly Issues", "Cumpleañeros", "Usuarios", "Configuraciones"],
+                iconos: ["fa-code", "fa-file-medical", "fa-cake-candles", "fa-user-gear", "fa-gears"],
                 cumpleHoy: true 
             },
             "QA_Auditor": { 
-                pin: "5678", 
-                cargo: "Auditor", 
-                genero: "femenino",
+                pin: "5678", cargo: "Auditor",
                 permisos: ["QA Reports for Weekly Issues"],
+                iconos: ["fa-clipboard-check"],
                 cumpleHoy: false 
             }
         };
 
         let userActivo = "";
-        let timer;
         const asis = document.getElementById('asistente-ia');
 
         function validarUser(val) {
-            clearTimeout(timer);
-            asis.innerText = "IA: Validando...";
-            timer = setTimeout(() => {
-                if(db[val]) {
-                    userActivo = val;
-                    asis.innerText = `IA: Usuario reconocido. Hola ${val.split(' ')[0]}.`;
-                    document.getElementById('btn-next-user').classList.remove('hidden');
-                    document.getElementById('wa-user').style.display = "none";
-                } else if(val.length > 5) {
-                    asis.innerText = "IA: Ese usuario no existe. Revisa o solicita recuperación.";
-                    document.getElementById('wa-user').style.display = "block";
-                }
-            }, 800);
+            if(db[val]) {
+                userActivo = val;
+                asis.innerText = `IA: Usuario reconocido. Hola ${val.split('_')[0]}.`;
+                document.getElementById('btn-next-user').classList.remove('hidden');
+            }
         }
 
         function irAlPin() {
@@ -133,215 +119,136 @@
         }
 
         function validarPin(pin) {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                if(db[userActivo].pin === pin) {
-                    asis.innerText = "IA: PIN correcto. Acceso concedido.";
-                    document.getElementById('btn-login').classList.remove('hidden');
-                    document.getElementById('wa-pin').style.display = "none";
-                } else if(pin.length >= 4) {
-                    asis.innerText = "IA: El PIN es incorrecto. Por favor, verifica.";
-                    document.getElementById('wa-pin').style.display = "block";
-                }
-            }, 800);
+            if(db[userActivo].pin === pin) {
+                document.getElementById('btn-login').classList.remove('hidden');
+            }
         }
 
         function irABienvenida() {
             document.getElementById('login-flow').classList.add('hidden');
             document.getElementById('bienvenida-ia').classList.remove('hidden');
-            
             const u = db[userActivo];
             document.getElementById('msg-bienvenida').innerText = `Soy tu asistente IA. Estoy aquí para ayudarte en tu cargo como ${u.cargo}.`;
-            
             if(u.cargo === "Admin" && u.cumpleHoy) {
-                document.getElementById('area-notificaciones').innerHTML = `<div class="badge-cumple">🎂 ¡Atención Admin! Hay un cumpleañero hoy en la lista.</div>`;
+                document.getElementById('area-notificaciones').innerHTML = `<div class="badge-cumple">🎂 ¡Atención Admin! Hay un cumpleañero hoy.</div>`;
             }
         }
 
         function verificarRutas() {
             const u = db[userActivo];
             document.getElementById('bienvenida-ia').classList.add('hidden');
-
             if (u.permisos.length > 1) {
-                // Ir a la página de botones inteligentes (Admin)
                 document.getElementById('menu-pestañas').classList.remove('hidden');
                 const lista = document.getElementById('lista-botones');
                 lista.innerHTML = "";
-                u.permisos.forEach(p => {
-                    const btn = document.createElement('button');
-                    btn.className = "btn-menu";
-                    btn.innerText = `➤ ${p}`;
-                    btn.onclick = () => abrirHerramienta(p);
-                    lista.appendChild(btn);
+                u.permisos.forEach((p, i) => {
+                    lista.innerHTML += `
+                        <div class="tile" onclick="abrirHerramienta('${p}')">
+                            <i class="fa-solid ${u.iconos[i]}"></i>
+                            <span>${p}</span>
+                        </div>`;
                 });
             } else {
-                // Ir directo a la única herramienta (Auditor)
                 abrirHerramienta(u.permisos[0]);
             }
         }
 
-function abrirHerramienta(nombre) {
-    document.getElementById('menu-pestañas').classList.add('hidden');
-    document.getElementById('entorno-trabajo').classList.remove('hidden');
-    document.getElementById('workspace-name').innerText = nombre;
-
-    const panel = document.getElementById('contenido-herramienta');
-    panel.innerHTML = ""; 
-
-    if (nombre === "Usuarios") {
-        panel.innerHTML = `
-            <div style="text-align: left; background: #0d1117; padding: 15px; border-radius: 8px;">
-                <p><strong>Gestión de Personal</strong></p>
-                <div style="border-bottom: 1px solid #333; padding: 5px 0;">👤 Jose Alfredo (Admin)</div>
-                <div style="border-bottom: 1px solid #333; padding: 5px 0;">👤 QA_Auditor (Auditor)</div>
-                <button onclick="alert('Función en desarrollo')" style="font-size: 0.8rem; margin-top: 10px; background: #238636;">+ Agregar Nuevo Usuario</button>
-            </div>`;
-    } 
-    else if (nombre === "Extractor de Codigo de Caja para Kohl's") {
-        panel.innerHTML = `
-            <textarea id="inputCodigo" placeholder="Escribe códigos aquí..." oninput="controlarBotonExtraer(this.value)" 
-                style="width:100%; height:80px; background:#0d1117; color:white; border:1px solid #333; border-radius:8px; padding:10px;"></textarea>
+        function abrirHerramienta(nombre) {
+            document.getElementById('menu-pestañas').classList.add('hidden');
+            document.getElementById('entorno-trabajo').classList.remove('hidden');
+            document.getElementById('workspace-name').innerText = nombre;
+            const panel = document.getElementById('contenido-herramienta');
             
-            <button id="btn-extraer" class="hidden" onclick="procesarCodigos()" style="background: #238636;">Extraer</button>
-
-            <div id="cuadro-resultado" class="hidden" style="margin-top:15px; background: #0d1117; border: 1px solid #00f2ff; padding:10px; border-radius:8px; text-align:left;">
-                <div id="lista-codigos" style="font-family: monospace; font-size: 0.9rem;"></div>
-                <button onclick="copiarYLimpiarTodo()" style="margin-top:10px; font-size:0.8rem;">Copiar y Limpiar</button>
-            </div>`;
-    }
-    else {
-        panel.innerHTML = `<p style="font-style: italic; color: #8b949e;">La herramienta "${nombre}" se está configurando...</p>`;
-    }
-} // <-- AQUÍ ESTABA EL CIERRE FALTANTE
-
-function volverAlMenu() {
-    const u = db[userActivo];
-    if(u.permisos.length > 1) {
-        document.getElementById('entorno-trabajo').classList.add('hidden');
-        document.getElementById('menu-pestañas').classList.remove('hidden');
-    } else {
-        location.reload();
-    }
-}
-
-function copiarYLimpiarTodo() {
-    const res = document.getElementById('lista-codigos');
-    const input = document.getElementById('inputCodigo');
-
-    if(res.innerText === "") return;
-
-    navigator.clipboard.writeText(res.innerText).then(() => {
-        alert("Copiado con éxito para WhatsApp");
-        input.value = "";
-        document.getElementById('cuadro-resultado').classList.add('hidden');
-        res.innerText = "";
-    });
-}
-
-function soporte(tipo) {
-    window.open(`https://wa.me/50588888888?text=Ayuda+con+mi+${tipo}`, '_blank');
-}
-
-// PWA REGISTRATION
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
-}
-        function volverAlMenu() {
-            const u = db[userActivo];
-            if(u.permisos.length > 1) {
-                document.getElementById('entorno-trabajo').classList.add('hidden');
-                document.getElementById('menu-pestañas').classList.remove('hidden');
+            if (nombre.includes("Extractor")) {
+                panel.innerHTML = `
+                    <textarea id="inputCodigo" placeholder="Pegar datos aquí..." style="width:100%; height:100px; background:#0d1117; color:white; border:1px solid #333; padding:10px; border-radius:8px;"></textarea>
+                    <button onclick="copiarYLimpiar()">Copiar para WhatsApp</button>`;
+            } else if (nombre === "Usuarios") {
+                panel.innerHTML = `<div style="text-align:left;">👤 Jose Alfredo (Admin)<br>👤 QA_Auditor (Auditor)</div>`;
             } else {
-                location.reload();
+                panel.innerHTML = `<p>Módulo de ${nombre} en desarrollo...</p>`;
             }
         }
 
         function copiarYLimpiar() {
             const input = document.getElementById('inputCodigo');
-            const res = document.getElementById('resultado');
-            res.innerText = "EXTRAÍDO: " + input.value;
-            
-            navigator.clipboard.writeText(res.innerText).then(() => {
-                alert("Copiado con éxito para WhatsApp");
+            navigator.clipboard.writeText(input.value).then(() => {
+                alert("Copiado con éxito");
                 input.value = "";
-                res.innerText = "";
             });
         }
 
-        function soporte(tipo) {
-            window.open(`https://wa.me/50588888888?text=Ayuda+con+mi+${tipo}`, '_blank');
+        function volverAlMenu() {
+            document.getElementById('entorno-trabajo').classList.add('hidden');
+            document.getElementById('menu-pestañas').classList.remove('hidden');
         }
 
-        // PWA REGISTRATION
+        // --- LÓGICA DEL CANVAS ACTUALIZADA ---
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let particles = [];
+        class Particle {
+            constructor() {
+                this.init();
+            }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0 || this.y > canvas.height || this.y < 0) {
+                    this.init();
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = '#00f2ff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0; // Reset blur for performance
+            }
+        }
+
+        function setup() {
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        setup();
+        animate();
+
+        // PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
         }
     </script>
 </body>
-    <canvas id="canvas" style="position: fixed; top: 0; left: 0; z-index: -1; background: #0a1929;"></canvas>
-
-    ```
-
-### 2. Ajuste en el Script
-El código que pusiste está excelente. Solo asegúrate de que esté dentro del bloque `<script>`, tal como indicaste con la flecha:
-
-```javascript
-    // ... tu código anterior de PWA ...
-
-    // --- CÓDIGO DEL FONDO FUTURISTA ---
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    // Función para ajustar el tamaño si cambias el tamaño de la ventana
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let particles = [];
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speedX = Math.random() * 1 - 0.5;
-            this.speedY = Math.random() * 1 - 0.5;
-        }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x > canvas.width) this.x = 0;
-            if (this.x < 0) this.x = canvas.width;
-            if (this.y > canvas.height) this.y = 0;
-            if (this.y < 0) this.y = canvas.height;
-        }
-        draw() {
-            ctx.fillStyle = '#00f2ff';
-            ctx.shadowBlur = 5; // Un pequeño brillo neón
-            ctx.shadowColor = '#00f2ff';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function init() {
-        particles = [];
-        for (let i = 0; i < 80; i++) particles.push(new Particle());
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-            p.update();
-            p.draw();
-        });
-        requestAnimationFrame(animate);
-    }
-    init();
-    animate();
-</script>
 </html>
