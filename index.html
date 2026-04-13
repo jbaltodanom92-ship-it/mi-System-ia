@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema JB - IA Master Security</title>
+    <title>Sistema JB - IA Master Final</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #02060a; --accent: #00f2ff; --win-blue: #0078d7; --card: #0d1117; --error: #ffeb3b; }
@@ -12,35 +12,31 @@
         .hidden { opacity: 0 !important; pointer-events: none !important; transform: scale(0.98) !important; }
         .display-none { display: none !important; }
 
-        /* LOGIN CON IA */
-        .login-card { width: 600px; display: flex; align-items: center; gap: 30px; background: rgba(255,255,255,0.02); padding: 40px; border: 1px solid #1a2026; border-radius: 8px; }
-        .avatar-frame { width: 150px; height: 150px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; overflow: hidden; }
-        .avatar-frame i { font-size: 5rem; color: #1f4b5e; }
+        /* LOGIN IA */
+        .login-card { width: 550px; display: flex; align-items: center; gap: 25px; background: rgba(255,255,255,0.02); padding: 40px; border: 1px solid #1a2026; border-radius: 12px; }
+        .avatar-frame { width: 140px; height: 140px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; overflow: hidden; }
+        .avatar-frame i { font-size: 4.5rem; color: #1f4b5e; }
         .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
-        input { width:100%; padding:14px; background:#0d1117; color:white; border:1px solid #30363d; border-radius: 4px; font-size: 1rem; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
-
+        input { width:100%; padding:14px; background:#0d1117; color:white; border:1px solid #30363d; border-radius: 4px; font-size: 1rem; outline: none; }
+        
         /* PANEL METRO */
-        .metro-grid { display: grid; grid-template-columns: repeat(4, 160px); grid-template-rows: repeat(2, 160px); gap: 12px; }
-        .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); }
-        .tile:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: 0 0 25px var(--accent); z-index: 10; }
+        .metro-grid { display: grid; grid-template-columns: repeat(4, 160px); gap: 12px; }
+        .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .tile:hover { transform: scale(1.05); border: 1px solid var(--accent); box-shadow: 0 0 20px var(--accent); z-index: 10; }
         .tile.wide { width: 332px; grid-column: span 2; }
-        .tile span { position: absolute; bottom: 10px; left: 10px; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
+        .tile span { position: absolute; bottom: 10px; left: 10px; font-size: 0.75rem; font-weight: bold; }
 
-        /* EXTRACTOR */
-        .ext-container { width: 1100px; display: flex; gap: 30px; background: var(--card); padding: 30px; border-radius: 12px; border: 1px solid #1a2026; }
+        /* EXTRACTOR BLINDADO */
+        .ext-container { width: 1050px; display: flex; gap: 25px; background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #1a2026; }
         .side-tools { width: 280px; display: flex; flex-direction: column; align-items: center; gap: 20px; border-right: 1px solid #30363d; padding-right: 20px; }
-        .progress-box { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
+        .progress-box { position: relative; width: 170px; height: 170px; display: flex; align-items: center; justify-content: center; }
         .prog-canvas { position: absolute; transform: rotate(-90deg); }
-        .clock-num { font-size: 1.7rem; font-weight: bold; color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-        textarea { width: 100%; height: 140px; background: white; color: black; border: none; padding: 15px; font-family: 'Consolas', monospace; font-size: 1rem; border-radius: 4px; resize: none; box-sizing: border-box; }
+        .clock-num { font-size: 1.6rem; font-weight: bold; color: var(--accent); }
+        textarea { width: 100%; height: 140px; background: white; color: black; border: none; padding: 15px; font-family: 'Consolas', monospace; border-radius: 4px; resize: none; box-sizing: border-box; }
         #txt-out { height: 70px; background: #010409; color: var(--accent); border: 1px solid #1a2026; }
-        .btn-win { width: 100%; padding: 15px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+        .btn-win { width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
         .btn-blue { background: #0078d7; color: white; }
         .btn-green { background: #238636; color: white; }
-        
-        /* MSJ IA */
-        .ia-bubble { background: rgba(0,242,255,0.1); border: 1px solid var(--accent); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; }
     </style>
 </head>
 <body onmousemove="resetInactivity()" ontouchstart="resetInactivity()" onkeydown="resetInactivity()">
@@ -52,39 +48,35 @@
                 <img id="user-photo" src="https://i.imgur.com/8Km9tLL.png" class="hidden">
             </div>
             <div style="flex-grow: 1;">
-                <h2 style="color: var(--accent); margin: 0 0 5px 0;">SEGURIDAD JB</h2>
-                <div id="asis-msg" class="ia-bubble">IA: Esperando identificación...</div>
+                <h2 style="color: var(--accent); margin: 0 0 10px 0;">SEGURIDAD JB</h2>
+                <div id="asis-msg" style="background: rgba(0,242,255,0.1); border: 1px solid var(--accent); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">IA: Ingrese su identificación.</div>
                 
-                <div id="login-inputs">
-                    <input type="text" id="u-in" placeholder="Usuario" oninput="iaIdentify(this.value)">
-                    <input type="password" id="p-in" class="hidden" placeholder="PIN" oninput="iaAuth(this.value)">
-                </div>
+                <input type="text" id="u-in" placeholder="Usuario" oninput="iaIdentify(this.value)">
+                <input type="password" id="p-in" class="hidden" placeholder="PIN" oninput="iaAuth(this.value)">
 
-                <div id="it-support" class="hidden display-none" style="margin-top:15px;">
-                    <button class="btn-win btn-blue" onclick="sendITWhatsApp()">
-                        <i class="fa-brands fa-whatsapp"></i> Contactar Admin IT
-                    </button>
-                </div>
+                <button id="it-support" class="btn-win btn-blue hidden display-none" style="margin-top:15px;" onclick="sendITWhatsApp()">
+                    <i class="fa-brands fa-whatsapp"></i> Contactar Admin IT
+                </button>
             </div>
         </div>
     </div>
 
     <div id="v-welcome" class="view hidden">
         <div style="width: 80%;">
-            <h1 style="font-size: 4rem; font-weight: 100; margin: 0;">Hola, <span id="user-name"></span></h1>
-            <div id="ia-family-news" style="margin-top: 20px; padding: 25px; border-left: 4px solid var(--accent); background: rgba(0,242,255,0.05);"></div>
-            <button class="btn-win btn-blue" style="width: 250px; margin-top: 30px;" onclick="showView('v-panel')">ACCEDER AL PANEL</button>
+            <h1 style="font-size: 3.5rem; font-weight: 100; margin: 0;">Hola, <span id="user-name"></span></h1>
+            <div id="ia-family-news" style="margin-top: 20px; padding: 20px; border-left: 4px solid var(--accent); background: rgba(0,242,255,0.05);"></div>
+            <button class="btn-win btn-blue" style="width: 220px; margin-top: 30px;" onclick="showView('v-panel')">CONTINUAR</button>
         </div>
     </div>
 
     <div id="v-panel" class="view hidden" style="flex-direction: column; align-items: flex-start; padding-left: 80px;">
-        <h2 style="font-weight: 100; font-size: 3rem;">Centro de Control</h2>
+        <h2 style="font-weight: 100; font-size: 3rem; margin-bottom: 25px;">Inicio</h2>
         <div class="metro-grid">
             <div class="tile wide" style="background:#00a4ef" onclick="showView('v-ext'); initEngine();">
-                <i class="fa-solid fa-microchip"></i><span>Extractor Kohl's</span>
+                <i class="fa-solid fa-bolt"></i><span>Extractor Master</span>
             </div>
-            <div class="tile" style="background:#7fba00"><i class="fa-solid fa-list-check"></i><span>QA Tools</span></div>
-            <div class="tile" style="background:#744da9"><i class="fa-solid fa-heart"></i><span>Familia</span></div>
+            <div class="tile" style="background:#7fba00"><i class="fa-solid fa-gear"></i><span>Sistemas</span></div>
+            <div class="tile" style="background:#744da9"><i class="fa-solid fa-cake-candles"></i><span>Familia</span></div>
             <div class="tile" style="background:#f25022" onclick="location.reload()"><i class="fa-solid fa-power-off"></i><span>Salir</span></div>
         </div>
     </div>
@@ -93,19 +85,19 @@
         <div class="ext-container">
             <div class="side-tools">
                 <div class="progress-box">
-                    <canvas id="progCanvas" width="180" height="180" class="prog-canvas"></canvas>
-                    <div style="z-index: 5; text-align: center;">
+                    <canvas id="progCanvas" width="170" height="170" class="prog-canvas"></canvas>
+                    <div style="text-align: center; z-index: 5;">
                         <div id="d-time" class="clock-num">00:00:00</div>
-                        <div id="alarm-info" style="color:var(--error); font-weight:bold; font-size:0.8rem; margin-top:5px;"></div>
+                        <div id="alarm-info" style="color:var(--error); font-weight:bold; font-size:0.75rem;"></div>
                     </div>
                 </div>
-                <div id="cal-ui" style="background:rgba(0,0,0,0.2); padding:10px; border-radius:6px; width:100%;"></div>
-                <button class="btn-win" style="background:#444;" onclick="showView('v-panel')">VOLVER</button>
+                <div id="cal-ui" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:6px; width:100%;"></div>
+                <button class="btn-win" style="background:#333;" onclick="showView('v-panel')">VOLVER</button>
             </div>
             <div style="flex-grow:1; display:flex; flex-direction:column; gap:12px;">
                 <h3 style="color:var(--accent); margin:0;">Herramienta de Extracción Blindada</h3>
                 <textarea id="raw-in" placeholder="Pegue la lista aquí..." oninput="toggleRun()"></textarea>
-                <button id="btn-run" class="btn-win btn-blue hidden display-none" onclick="processX()">EXTRAER CÓDIGOS</button>
+                <button id="btn-run" class="btn-win btn-blue hidden display-none" onclick="processX()">EXTRAER ÚLTIMOS 8 DÍGITOS</button>
                 <div id="out-box" class="hidden display-none">
                     <textarea id="txt-out" readonly></textarea>
                     <button class="btn-win btn-green" style="margin-top:10px;" onclick="copyFinish()"><i class="fa-brands fa-whatsapp"></i> COPIAR HORIZONTAL</button>
@@ -115,93 +107,92 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN Y DATOS
-        let user = "";
-        const USUARIOS = { "JBaltodano_Admin": "404471" };
-        const FAMILIA = [
+        // CONFIGURACIÓN
+        let activeUser = "";
+        const BD_AUTH = { "JBaltodano_Admin": "404471" };
+        const BD_FAMILIA = [
             { n: "Hilda (Mamá)", m: 1, d: 27 }, // Feb 27
             { n: "Hija", m: 0, d: 15 } // Enero
         ];
 
-        let idleTimer;
+        // MONITOR DE INACTIVIDAD
+        let idleTime;
         function resetInactivity() {
-            clearTimeout(idleTimer);
-            // Si estamos en el login y no ha entrado, vigilamos inactividad de 5 seg
-            if(document.getElementById('v-login').classList.contains('hidden') === false) {
-                idleTimer = setTimeout(iaOfferHelp, 5000);
+            clearTimeout(idleTime);
+            if(!document.getElementById('v-login').classList.contains('hidden')) {
+                idleTime = setTimeout(iaHelpOffer, 5000); // 5 seg
             }
         }
 
-        function iaOfferHelp() {
-            const msg = document.getElementById('asis-msg');
-            if(user === "") {
-                msg.innerText = "IA: He notado que no has ingresado datos. ¿Deseas que envíe un mensaje al Admin IT?";
+        function iaHelpOffer() {
+            if(activeUser === "") {
+                document.getElementById('asis-msg').innerText = "IA: ¿Necesitas ayuda? Puedes contactar al Admin IT.";
                 document.getElementById('it-support').classList.remove('hidden', 'display-none');
             }
         }
 
-        // LOGIN IA
+        // LOGIN IA DINÁMICO
         function iaIdentify(val) {
-            if(USUARIOS[val]) {
-                user = val;
+            const itBtn = document.getElementById('it-support');
+            if(BD_AUTH[val]) {
+                activeUser = val;
+                itBtn.classList.add('hidden', 'display-none'); // Ocultar si es correcto
                 document.getElementById('asis-msg').innerText = "IA: Usuario reconocido. Ingrese su PIN.";
                 document.getElementById('bot-icon').classList.add('hidden');
                 document.getElementById('user-photo').classList.remove('hidden');
                 document.getElementById('u-in').classList.add('hidden');
                 document.getElementById('p-in').classList.remove('hidden').focus();
-                document.getElementById('it-support').classList.add('hidden', 'display-none');
+            } else if (val.length > 0) {
+                itBtn.classList.add('hidden', 'display-none'); // Ocultar mientras escribe
             }
         }
 
         function iaAuth(val) {
+            const itBtn = document.getElementById('it-support');
+            if(val.length > 0) itBtn.classList.add('hidden', 'display-none');
+
             if(val.length === 6) {
-                if(val === USUARIOS[user]) {
+                if(val === BD_AUTH[activeUser]) {
                     document.getElementById('user-name').innerText = "Jose Alfredo";
                     showView('v-welcome');
-                    iaFamilyScan();
+                    iaFamilyLogic();
                 } else {
-                    document.getElementById('asis-msg').innerText = "IA: PIN incorrecto. ¿Deseas contactar al Admin IT?";
-                    document.getElementById('it-support').classList.remove('hidden', 'display-none');
+                    document.getElementById('asis-msg').innerText = "IA: PIN incorrecto. ¿Deseas asistencia?";
+                    itBtn.classList.remove('hidden', 'display-none');
                 }
             }
         }
 
         function sendITWhatsApp() {
-            const num = "50584386180"; // Nicaragua
-            const msg = "Hola Admin IT, solicito asistencia. Mi usuario o PIN no son reconocidos por el sistema JB.";
-            window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
+            const msg = "Hola Admin IT (8438-6180), solicito ayuda con mi acceso al sistema JB.";
+            window.open(`https://wa.me/50584386180?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         // IA FAMILIAR
-        function iaFamilyScan() {
+        function iaFamilyLogic() {
             const now = new Date();
             const box = document.getElementById('ia-family-news');
-            let txt = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Revisando eventos de abril 2026...</p>`;
+            let html = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Revisando eventos...</p>`;
             
             let found = false;
-            FAMILIA.forEach(f => {
+            BD_FAMILIA.forEach(f => {
                 const bday = new Date(now.getFullYear(), f.m, f.d);
                 const diff = Math.ceil((bday - now) / (1000*60*60*24));
 
                 if(now.getMonth() === f.m && now.getDate() === f.d) {
-                    txt += `<p style="color:var(--accent); font-weight:bold;">¡ALERTA! Hoy es el cumpleaños de ${f.n}.</p>`;
+                    html += `<p style="color:var(--accent); font-weight:bold;">¡HOY! Es el cumpleaños de ${f.n}.</p>`;
                     found = true;
                 } else if(diff > 0 && diff <= 10) {
-                    txt += `<p style="color:var(--error);">PRÓXIMO EVENTO: El cumpleaños de ${f.n} es en ${diff} días.</p>`;
+                    html += `<p style="color:var(--error);">PRONTO: El cumpleaños de ${f.n} es en ${diff} días.</p>`;
                     found = true;
                 }
             });
 
-            if(!found) txt += `<p>No hay cumpleaños cercanos. Todo bajo control.</p>`;
-            box.innerHTML = txt;
+            if(!found) html += `<p>No hay cumpleaños próximos en la familia.</p>`;
+            box.innerHTML = html;
         }
 
-        function showView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        // MOTOR EXTRACTOR Y PROGRESO
+        // MOTOR EXTRACTOR
         function initEngine() {
             const ctx = document.getElementById('progCanvas').getContext('2d');
             setInterval(() => {
@@ -209,18 +200,16 @@
                 const h = now.getHours(), m = now.getMinutes(), day = now.getDay();
                 document.getElementById('d-time').innerText = now.toLocaleTimeString();
 
-                // Horarios L-V
-                let start = 7, end = (day >= 2 && day <= 4) ? 18 : 17;
+                let start = 7, end = (day >= 2 && day <= 4) ? 18 : 17; // L-V
 
-                ctx.clearRect(0,0,180,180);
-                ctx.beginPath(); ctx.arc(90,90,85,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=8; ctx.stroke();
+                ctx.clearRect(0,0,170,170);
+                ctx.beginPath(); ctx.arc(85,85,80,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=8; ctx.stroke();
                 
-                let prog = 0;
-                if(h >= start && h < end) prog = ((h-start)*3600 + m*60) / ((end-start)*3600);
-                else if(h >= end) prog = 1;
+                let p = 0;
+                if(h >= start && h < end) p = ((h-start)*3600 + m*60) / ((end-start)*3600);
+                else if(h >= end) p = 1;
 
-                ctx.beginPath(); ctx.arc(90,90,85,0,prog*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.stroke();
-                
+                ctx.beginPath(); ctx.arc(85,85,80,0,p*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.stroke();
                 if(h === end && m === 0) document.getElementById('alarm-info').innerText = "FIN DE JORNADA";
             }, 1000);
             drawCal();
@@ -233,9 +222,9 @@
 
         function processX() {
             const raw = document.getElementById('raw-in').value.split('\n');
-            // Lógica de 8 dígitos horizontal
-            const filtered = raw.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
-            document.getElementById('txt-out').value = filtered.join(' ');
+            // Lógica 8 dígitos horizontal
+            const clean = raw.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
+            document.getElementById('txt-out').value = clean.join(' ');
             document.getElementById('out-box').classList.remove('hidden', 'display-none');
         }
 
@@ -244,6 +233,11 @@
             document.getElementById('raw-in').value = "";
             document.getElementById('out-box').classList.add('hidden', 'display-none');
             toggleRun();
+        }
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
         function drawCal() {
