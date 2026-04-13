@@ -3,183 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema JB - Windows 8 Edition</title>
+    <title>Sistema JB - Versión Final Fiel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg-win8: #0078d7; --accent: #00f2ff; --error: #ffeb3b; }
-        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-win8); color: white; overflow: hidden; }
+        :root { --bg: #03080f; --accent: #00f2ff; --card: #0d1117; --border: #161b22; }
+        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; overflow: hidden; }
+        .full-screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100%; }
+        .hidden { display: none !important; }
 
-        .screen { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; position: absolute; transition: 0.5s ease-in-out; }
-        .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        /* LOGIN: FIEL A CAPTURA */
+        .login-box { width: 600px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 40px; display: flex; align-items: center; gap: 30px; }
+        .avatar-frame { width: 150px; height: 150px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; }
+        .avatar-frame i { font-size: 5rem; color: #1f4b5e; }
+        .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .ia-text { color: var(--accent); font-style: italic; margin-bottom: 10px; font-size: 0.95rem; }
+        .input-win { width: 100%; background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 6px; outline: none; }
 
-        /* LOGIN */
-        .login-card { width: 550px; display: flex; align-items: center; gap: 30px; background: rgba(0,0,0,0.1); padding: 40px; border-radius: 4px; }
-        .avatar-box { width: 150px; height: 150px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .avatar-box i { font-size: 5rem; }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-        .login-fields { flex-grow: 1; }
-        .status-msg { font-size: 1.2rem; font-weight: 300; margin-bottom: 10px; }
-        .status-msg.err { color: var(--error); font-weight: bold; }
-        .win-input { width: 100%; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.5); color: white; padding: 12px; font-size: 1.1rem; outline: none; box-sizing: border-box; }
+        /* PANEL DE CONTROL: FIEL A CAPTURA */
+        .panel-container { width: 850px; background: var(--card); border: 1px solid var(--border); padding: 30px; border-radius: 12px; }
+        .grid-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .panel-card { 
+            background: #0d1117; border-left: 4px solid var(--accent); padding: 35px; 
+            display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s;
+        }
+        .panel-card:hover { background: #161b22; }
+        .panel-card i { font-size: 2rem; color: var(--accent); }
 
-        /* BIENVENIDA */
-        .welcome-content { text-align: left; width: 80%; max-width: 800px; }
-        .welcome-content h1 { font-size: 4.5rem; font-weight: 100; margin: 0; }
-        .welcome-content h2 { font-size: 2rem; font-weight: 300; color: rgba(255,255,255,0.8); margin-bottom: 30px; }
-
-        /* PANEL METRO WINDOWS 8 */
-        .metro-container { flex-direction: column; align-items: flex-start; padding: 60px 100px; overflow-x: auto; white-space: nowrap; }
-        .metro-container h1 { font-weight: 100; font-size: 3.5rem; margin: 0 0 40px 0; }
-        .tiles-grid { display: grid; grid-template-columns: repeat(4, 160px); grid-template-rows: repeat(2, 160px); gap: 12px; grid-auto-flow: column; }
-        .tile { position: relative; width: 160px; height: 160px; cursor: pointer; transition: 0.1s; display: flex; align-items: center; justify-content: center; }
-        .tile:active { transform: scale(0.95); }
-        .tile.wide { width: 332px; grid-column: span 2; }
-        .tile i { font-size: 3.5rem; }
-        .tile span { position: absolute; bottom: 12px; left: 12px; font-size: 0.9rem; }
-        
-        /* Colores Metro */
-        .blue { background: #00a4ef; } .green { background: #7fba00; } .purple { background: #744da9; } .orange { background: #ffb900; } .red { background: #f25022; }
-
-        /* EXTRACTOR */
-        .extractor-card { width: 950px; background: rgba(0,0,0,0.85); padding: 40px; display: flex; gap: 40px; border: 1px solid rgba(255,255,255,0.1); }
-        .side-col { width: 220px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        /* EXTRACTOR: FIEL A CAPTURA */
+        .extractor-container { width: 950px; background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 40px; display: flex; gap: 40px; }
+        .side-col { width: 250px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .main-col { flex-grow: 1; display: flex; flex-direction: column; gap: 15px; }
-        textarea { width: 100%; height: 160px; background: white; color: black; border: none; padding: 15px; font-family: monospace; font-size: 1rem; box-sizing: border-box; }
-        .win-btn { border: none; padding: 15px; color: white; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .btn-blue { background: #0078d7; } .btn-green { background: #267326; } .btn-gray { background: #505050; width: 100%; }
+        
+        /* Reloj Circular */
+        .clock-wrap { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
+        .clock-canvas { position: absolute; transform: rotate(-90deg); }
+        .digital-time { font-size: 1.5rem; font-weight: bold; color: var(--accent); }
+
+        textarea { width: 100%; height: 160px; background: white; color: black; border: none; padding: 15px; font-family: monospace; border-radius: 4px; resize: none; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .btn-blue { background: #1b6cd5; color: white; }
+        .btn-green { background: #238636; color: white; }
+        .btn-back { background: #3c4043; color: white; }
     </style>
 </head>
 <body>
 
-    <div id="scr-login" class="screen">
-        <div class="login-card">
-            <div class="avatar-box">
-                <i class="fa-solid fa-robot" id="bot-icon"></i>
-                <img id="user-img" src="https://i.imgur.com/8Km9tLL.png" class="hidden">
+    <div class="full-screen">
+        <div id="login-v" class="login-box">
+            <div class="avatar-frame">
+                <i class="fa-solid fa-robot" id="ia-bot"></i>
+                <img id="user-pic" src="https://i.imgur.com/8Km9tLL.png" class="hidden">
             </div>
-            <div class="login-fields">
-                <div id="status-txt" class="status-msg">Inicie sesión</div>
-                <input type="text" id="user-in" class="win-input" placeholder="Usuario" onkeypress="loginStep1(event)">
-                <input type="password" id="pin-in" class="win-input hidden" placeholder="PIN de Seguridad" oninput="loginStep2(this.value)">
-            </div>
-        </div>
-    </div>
-
-    <div id="scr-welcome" class="screen hidden">
-        <div class="welcome-content">
-            <h1 id="greet-name">Hola, Jose Alfredo</h1>
-            <h2>Bienvenido de nuevo al sistema.</h2>
-            <button class="win-btn btn-blue" style="width: 200px;" onclick="showPanel()">Continuar</button>
-        </div>
-    </div>
-
-    <div id="scr-panel" class="screen hidden metro-container">
-        <h1>Inicio</h1>
-        <div class="tiles-grid">
-            <div class="tile wide blue" onclick="showExtractor()">
-                <i class="fa-solid fa-barcode"></i>
-                <span>Extractor Kohl's</span>
-            </div>
-            <div class="tile green">
-                <i class="fa-solid fa-file-invoice"></i>
-                <span>QA Reports</span>
-            </div>
-            <div class="tile purple">
-                <i class="fa-solid fa-cake-candles"></i>
-                <span>Cumpleaños</span>
-            </div>
-            <div class="tile orange">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span>Seguridad</span>
-            </div>
-            <div class="tile blue">
-                <i class="fa-solid fa-gears"></i>
-                <span>Ajustes</span>
-            </div>
-            <div class="tile red" onclick="location.reload()">
-                <i class="fa-solid fa-power-off"></i>
-                <span>Salir</span>
+            <div style="flex-grow: 1;">
+                <h2 style="color: var(--accent); margin: 0 0 20px 0;">SISTEMA DE SEGURIDAD</h2>
+                <div id="ia-prompt" class="ia-text">IA: Ingrese su identificación.</div>
+                <input type="text" id="user-in" class="input-win" placeholder="Usuario" onkeypress="auth1(event)">
+                <input type="password" id="pin-in" class="input-win hidden" placeholder="PIN" oninput="auth2(this.value)">
             </div>
         </div>
-    </div>
 
-    <div id="scr-extractor" class="screen hidden">
-        <div class="extractor-card">
+        <div id="panel-v" class="panel-container hidden">
+            <h2 style="color: var(--accent); margin-bottom: 25px;">PANEL DE CONTROL</h2>
+            <div class="grid-panel">
+                <div class="panel-card" onclick="toExt()"><i class="fa-solid fa-code"></i><span>Extractor Kohl's</span></div>
+                <div class="panel-card"><i class="fa-solid fa-file-medical"></i><span>QA Reports</span></div>
+                <div class="panel-card"><i class="fa-solid fa-cake-candles"></i><span>Cumpleañeros</span></div>
+                <div class="panel-card"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></div>
+                <div class="panel-card" style="grid-column: span 2;"><i class="fa-solid fa-gears"></i><span>Configuraciones</span></div>
+            </div>
+        </div>
+
+        <div id="ext-v" class="extractor-container hidden">
             <div class="side-col">
-                <div id="clock" style="font-size: 2.5rem; font-weight: 100;">00:00</div>
-                <div id="date" style="text-align: center; font-size: 0.9rem;">Lunes, 13 de Abril</div>
-                <button class="win-btn btn-gray" onclick="showPanel()">Volver</button>
+                <div class="clock-wrap">
+                    <canvas id="c-clock" width="180" height="180" class="clock-canvas"></canvas>
+                    <div id="d-clock" class="digital-time">00:00:00</div>
+                </div>
+                <div id="cal" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; width: 100%; font-size: 0.85rem;"></div>
+                <button class="btn btn-back" onclick="toPan()">Volver al Menú</button>
             </div>
             <div class="main-col">
-                <h2 style="font-weight: 300; margin: 0;">Extractor de Código (8 Dígitos)</h2>
-                <textarea id="raw-input" placeholder="Pega los códigos aquí..."></textarea>
-                <button class="win-btn btn-blue" onclick="process()">Extraer Ahora</button>
-                <textarea id="clean-output" readonly placeholder="Resultados listos..."></textarea>
-                <button class="win-btn btn-green" onclick="copy()"><i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar</button>
+                <h2 style="color: var(--accent); margin: 0;">Extractor de Código Kohl's</h2>
+                <textarea id="raw" placeholder="Pega los códigos aquí..."></textarea>
+                <button class="btn btn-blue" onclick="run()">Extraer Ahora</button>
+                <textarea id="out" readonly></textarea>
+                <button class="btn btn-green" onclick="copy()"><i class="fa-brands fa-whatsapp"></i> Copiar y Limpiar Todo</button>
             </div>
         </div>
     </div>
 
     <script>
-        const USER_ADMIN = "JBaltodano_Admin";
-        const PIN_ADMIN = "404471";
+        const U = "JBaltodano_Admin", P = "404471";
 
-        // Lógica de navegación y login
-        function loginStep1(e) {
-            if(e.key === 'Enter') {
-                const u = document.getElementById('user-in').value;
-                if(u === USER_ADMIN) {
-                    document.getElementById('status-txt').innerText = "Jose Alfredo Baltodano";
-                    document.getElementById('bot-icon').classList.add('hidden');
-                    document.getElementById('user-img').classList.remove('hidden');
-                    document.getElementById('user-in').classList.add('hidden');
-                    document.getElementById('pin-in').classList.remove('hidden').focus();
-                } else {
-                    const st = document.getElementById('status-txt');
-                    st.innerText = "Usuario no reconocido";
-                    st.classList.add('err');
-                }
+        function auth1(e) {
+            if(e.key === 'Enter' && document.getElementById('user-in').value === U) {
+                document.getElementById('ia-prompt').innerText = "IA: Usuario validado. Ingrese PIN.";
+                document.getElementById('ia-bot').classList.add('hidden');
+                document.getElementById('user-pic').classList.remove('hidden');
+                document.getElementById('user-in').classList.add('hidden');
+                document.getElementById('pin-in').classList.remove('hidden').focus();
             }
         }
 
-        function loginStep2(v) {
-            if(v.length === 6) {
-                if(v === PIN_ADMIN) {
-                    transition('scr-login', 'scr-welcome');
-                } else {
-                    const st = document.getElementById('status-txt');
-                    st.innerText = "PIN Incorrecto";
-                    st.classList.add('err');
-                }
-            }
+        function auth2(v) {
+            if(v === P) { document.getElementById('login-v').classList.add('hidden'); toPan(); }
         }
 
-        function transition(from, to) {
-            document.getElementById(from).classList.add('hidden');
-            document.getElementById(to).classList.remove('hidden');
+        function toPan() { 
+            document.getElementById('ext-v').classList.add('hidden');
+            document.getElementById('panel-v').classList.remove('hidden'); 
         }
 
-        function showPanel() { transition('scr-welcome', 'scr-panel'); transition('scr-extractor', 'scr-panel'); }
-        function showExtractor() { 
-            transition('scr-panel', 'scr-extractor'); 
-            setInterval(() => {
-                const n = new Date();
-                document.getElementById('clock').innerText = n.getHours() + ":" + String(n.getMinutes()).padStart(2,'0');
-            }, 1000);
+        function toExt() {
+            document.getElementById('panel-v').classList.add('hidden');
+            document.getElementById('ext-v').classList.remove('hidden');
+            initClock(); initCal();
         }
 
-        // Extracción blindada a 8 caracteres
-        function process() {
-            const raw = document.getElementById('raw-input').value;
-            const res = raw.split('\n').map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
-            document.getElementById('clean-output').value = res.join('\n');
+        // Extracción blindada: últimos 8 caracteres
+        function run() {
+            const lines = document.getElementById('raw').value.split('\n');
+            const res = lines.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
+            document.getElementById('out').value = res.join('\n');
         }
 
         function copy() {
-            const out = document.getElementById('clean-output');
-            navigator.clipboard.writeText(out.value.replace(/\n/g, ' '));
-            document.getElementById('raw-input').value = "";
-            out.value = "";
+            navigator.clipboard.writeText(document.getElementById('out').value.replace(/\n/g, ' '));
+            document.getElementById('raw').value = ""; document.getElementById('out').value = "";
+        }
+
+        function initClock() {
+            const ctx = document.getElementById('c-clock').getContext('2d');
+            setInterval(() => {
+                const n = new Date();
+                ctx.clearRect(0,0,180,180);
+                ctx.beginPath(); ctx.arc(90,90,85,0,2*Math.PI); ctx.strokeStyle="#161b22"; ctx.lineWidth=8; ctx.stroke();
+                ctx.beginPath(); ctx.arc(90,90,85,0,(n.getSeconds()/60)*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.stroke();
+                document.getElementById('d-clock').innerText = n.toLocaleTimeString();
+            }, 1000);
+        }
+
+        function initCal() {
+            let d = new Date();
+            document.getElementById('cal').innerHTML = `<div style="text-align:center;color:var(--accent);margin-bottom:10px;">Abril 2026</div>` + 
+            `<div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;">` +
+            `<span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>` +
+            Array.from({length:30}, (_,i)=>`<span style="${i+1===13?'color:var(--accent);font-weight:bold':''}">${i+1}</span>`).join('') + `</div>`;
         }
     </script>
 </body>
