@@ -3,201 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Automatice JBAM</title>
+    <title>Extractor Profesional de Código</title>
     <link rel="manifest" href="manifest.json">
     <style>
         :root {
-            --bg-color: #0d1117;
-            --text-color: #c9d1d9;
-            --accent-color: #007bff;
-            --error-color: #ffca28;
-            --card-bg: #161b22;
+            --bg: #0d1117; --card: #161b22; --accent: #007bff; --text: #c9d1d9; --warn: #ffca28; --futuristic: #00f2ff;
         }
+        body, html { height: 100%; margin: 0; display: flex; justify-content: center; align-items: center; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        .container { background: var(--card); padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 20px rgba(0,242,255,0.2); border: 1px solid #30363d; }
+        
+        input { width: 100%; box-sizing: border-box; padding: 14px; margin: 10px 0; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; text-align: center; font-size: 1rem; }
+        input:focus { border-color: var(--futuristic); outline: none; }
 
-        /* Centrado total en la página */
-        body, html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', sans-serif;
-        }
+        button { width: 100%; background: var(--accent); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        button:hover { box-shadow: 0 0 15px var(--accent); }
 
-        .container {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            width: 90%;
-            max-width: 400px;
-            text-align: center; /* Centra el contenido interno */.
-        }
+        /* Botones Inteligentes Futuristas */
+        .btn-menu { background: #1f2937; border-left: 4px solid var(--futuristic); margin: 8px 0; text-align: left; padding: 15px; font-size: 0.9rem; }
+        .btn-menu:hover { background: #2d3748; transform: translateX(5px); }
 
-        input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: white;
-            text-align: center;
-        }
-
-        button {
-            width: 100%;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        #asistente-texto {
-            color: var(--error-color);
-            font-size: 0.9em;
-            margin: 15px 0;
-            min-height: 20px;
-        }
-
-        .btn-recuperar {
-            background-color: transparent;
-            color: var(--error-color);
-            border: 1px solid var(--error-color);
-            font-size: 0.85em;
-            display: none; /* Se activa por JS */
-            margin: 10px auto;
-        }
-
+        .btn-wa { background: transparent; color: var(--warn); border: 1px solid var(--warn); margin-top: 10px; font-size: 0.85em; display: none; }
+        #asistente-ia { color: var(--warn); margin: 15px 0; min-height: 45px; font-style: italic; font-size: 0.95rem; }
         .hidden { display: none; }
-
-        textarea {
-            width: 100%;
-            box-sizing: border-box;
-            height: 100px;
-            background: #0d1117;
-            color: white;
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: 10px;
-        }
+        
+        .badge-cumple { background: #238636; color: white; padding: 10px; border-radius: 8px; margin: 15px 0; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
     </style>
 </head>
 <body>
 
-    <div id="login-section" class="container">
-        <h2>Acceso al Sistema</h2>
-        <div id="asistente-texto">IA: Esperando usuario...</div>
-        
-        <input type="text" id="user-input" placeholder="Nombre de Usuario" oninput="validarUsuarioRealTime(this.value)">
-        <button id="btn-recuperar-user" class="btn-recuperar" onclick="soporteWA('usuario')">Recuperar Usuario</button>
-        
-        <input type="password" id="pin-input" class="hidden" placeholder="Introduce tu PIN" oninput="validarPinRealTime(this.value)">
-        <button id="btn-recuperar-pin" class="btn-recuperar" onclick="soporteWA('PIN')">Recuperar PIN</button>
-        
-        <button id="btn-entrar" class="hidden" onclick="entrarAlPrograma()">Ingresar al Entorno</button>
+    <div id="login-flow" class="container">
+        <h2 style="color: var(--futuristic)">LOGIN IA</h2>
+        <div id="asistente-ia">IA: Por favor, escribe tu nombre de usuario.</div>
+
+        <div id="step-user">
+            <input type="text" id="user-input" placeholder="Nombre de Usuario" oninput="validarUser(this.value)">
+            <button id="btn-next-user" class="hidden" onclick="irAlPin()">Siguiente</button>
+            <button id="wa-user" class="btn-wa" onclick="soporte('usuario')">Recuperar Usuario vía WhatsApp</button>
+        </div>
+
+        <div id="step-pin" class="hidden">
+            <input type="password" id="pin-input" placeholder="Introduce tu PIN" oninput="validarPin(this.value)">
+            <button id="btn-login" class="hidden" onclick="irABienvenida()">Ingresar al Sistema</button>
+            <button id="wa-pin" class="btn-wa" onclick="soporte('PIN')">Recuperar PIN vía WhatsApp</button>
+        </div>
     </div>
 
-    <div id="app-section" class="container hidden">
-        <h2 id="welcome-msg">Bienvenido</h2>
-        <textarea id="inputCodigo" placeholder="Pega el código aquí..."></textarea>
-        <div id="resultado" style="margin:10px 0; padding:10px; border:1px dashed #30363d; font-size: 0.9em;"></div>
-        
-        <button onclick="copiarParaWhatsApp()">Copiar para WhatsApp</button>
-        <button style="background:#30363d;" onclick="location.reload()">Cerrar Sesión</button>
+    <div id="bienvenida-ia" class="container hidden">
+        <h2 id="ia-title">Asistente Virtual</h2>
+        <p id="msg-bienvenida"></p>
+        <div id="area-notificaciones"></div>
+        <button onclick="verificarRutas()">Manos a la obra</button>
+    </div>
+
+    <div id="menu-pestañas" class="container hidden">
+        <h3 style="color: var(--futuristic)">Panel de Trabajo</h3>
+        <p style="font-size: 0.8rem; color: #8b949e;">Selecciona la pestaña de destino:</p>
+        <div id="lista-botones">
+            </div>
+        <button style="background:#30363d; margin-top:20px;" onclick="location.reload()">Cerrar Sesión</button>
+    </div>
+
+    <div id="entorno-trabajo" class="container hidden">
+        <h3 id="workspace-name">Herramienta</h3>
+        <textarea id="inputCodigo" placeholder="Pegar datos aquí..." style="width:100%; height:100px; background:#0d1117; color:white; border:1px solid #333; padding:10px;"></textarea>
+        <div id="resultado" style="margin:15px 0; padding:10px; border:1px dashed #444; min-height:30px; font-size:0.85rem;"></div>
+        <button onclick="copiarYLimpiar()">Copiar para WhatsApp</button>
+        <button style="background:#30363d;" onclick="volverAlMenu()">Volver al Menú</button>
     </div>
 
     <script>
-        const usuariosDB = {
-            "JBaltodano_Admin": { pin: "404471", cargo: "Admin" },
-            "QA_Auditor": { pin: "5678", cargo: "QA" }
+        // BASE DE DATOS EXACTA DE ANOCHE
+        const db = {
+            "Jose Alfredo Baltodano Mora": { 
+                pin: "1234", 
+                cargo: "Admin", 
+                genero: "masculino",
+                permisos: ["Extractor de Codigo de Caja para Kohl's", "QA Reports for Weekly Issues", "Cumpleañeros", "Usuarios", "Configuraciones"],
+                cumpleHoy: true 
+            },
+            "QA_Auditor": { 
+                pin: "5678", 
+                cargo: "Auditor", 
+                genero: "femenino",
+                permisos: ["QA Reports for Weekly Issues"],
+                cumpleHoy: false 
+            }
         };
 
-        let usuarioIdentificado = null;
-        let timerEscritura;
-        const asistente = document.getElementById('asistente-texto');
+        let userActivo = "";
+        let timer;
+        const asis = document.getElementById('asistente-ia');
 
-        // VALIDACIÓN DE USUARIO (Corregido el "Escribiendo...")
-        function validarUsuarioRealTime(valor) {
-            clearTimeout(timerEscritura);
-            if (valor.trim() === "") {
-                asistente.innerText = "IA: Esperando usuario...";
-                return;
-            }
-            
-            asistente.innerText = "IA: Validando...";
-            
-            timerEscritura = setTimeout(() => {
-                if (usuariosDB[valor]) {
-                    usuarioIdentificado = valor;
-                    asistente.innerText = "IA: Usuario reconocido. Introduce tu PIN.";
-                    document.getElementById('pin-input').classList.remove('hidden');
-                    document.getElementById('btn-recuperar-user').style.display = "none";
-                } else if (valor.length > 5) {
-                    asistente.innerText = "IA: Ese usuario no existe. ¿Deseas recuperarlo?";
-                    document.getElementById('btn-recuperar-user').style.display = "block";
-                }
-            }, 800); // 800ms de espera tras dejar de escribir
-        }
-
-        // VALIDACIÓN DE PIN
-        function validarPinRealTime(pin) {
-            clearTimeout(timerEscritura);
-            if (pin.trim() === "") return;
-
-            asistente.innerText = "IA: Verificando PIN...";
-
-            timerEscritura = setTimeout(() => {
-                if (usuariosDB[usuarioIdentificado].pin === pin) {
-                    asistente.innerText = "IA: Todo correcto. Ya puedes entrar.";
-                    document.getElementById('btn-entrar').classList.remove('hidden');
-                    document.getElementById('btn-recuperar-pin').style.display = "none";
-                } else if (pin.length >= 4) {
-                    asistente.innerText = "IA: PIN incorrecto. Revisa o recupera tu acceso.";
-                    document.getElementById('btn-recuperar-pin').style.display = "block";
+        function validarUser(val) {
+            clearTimeout(timer);
+            asis.innerText = "IA: Validando...";
+            timer = setTimeout(() => {
+                if(db[val]) {
+                    userActivo = val;
+                    asis.innerText = `IA: Usuario reconocido. Hola ${val.split(' ')[0]}.`;
+                    document.getElementById('btn-next-user').classList.remove('hidden');
+                    document.getElementById('wa-user').style.display = "none";
+                } else if(val.length > 5) {
+                    asis.innerText = "IA: Ese usuario no existe. Revisa o solicita recuperación.";
+                    document.getElementById('wa-user').style.display = "block";
                 }
             }, 800);
         }
 
-        function entrarAlPrograma() {
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('app-section').classList.remove('hidden');
-            document.getElementById('welcome-msg').innerText = `Hola, ${usuariosDB[usuarioIdentificado].cargo}`;
+        function irAlPin() {
+            document.getElementById('step-user').classList.add('hidden');
+            document.getElementById('step-pin').classList.remove('hidden');
+            asis.innerText = "IA: Ahora ingresa tu PIN de acceso.";
         }
 
-        function soporteWA(tipo) {
-            const msj = `Hola Jose Alfredo, necesito ayuda con mi ${tipo} del Extractor de Código.`;
-            window.open(`https://wa.me/50588888888?text=${encodeURIComponent(msj)}`, '_blank');
+        function validarPin(pin) {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                if(db[userActivo].pin === pin) {
+                    asis.innerText = "IA: PIN correcto. Acceso concedido.";
+                    document.getElementById('btn-login').classList.remove('hidden');
+                    document.getElementById('wa-pin').style.display = "none";
+                } else if(pin.length >= 4) {
+                    asis.innerText = "IA: El PIN es incorrecto. Por favor, verifica.";
+                    document.getElementById('wa-pin').style.display = "block";
+                }
+            }, 800);
         }
 
-        function copiarParaWhatsApp() {
+        function irABienvenida() {
+            document.getElementById('login-flow').classList.add('hidden');
+            document.getElementById('bienvenida-ia').classList.remove('hidden');
+            
+            const u = db[userActivo];
+            document.getElementById('msg-bienvenida').innerText = `Soy tu asistente IA. Estoy aquí para ayudarte en tu cargo como ${u.cargo}.`;
+            
+            if(u.cargo === "Admin" && u.cumpleHoy) {
+                document.getElementById('area-notificaciones').innerHTML = `<div class="badge-cumple">🎂 ¡Atención Admin! Hay un cumpleañero hoy en la lista.</div>`;
+            }
+        }
+
+        function verificarRutas() {
+            const u = db[userActivo];
+            document.getElementById('bienvenida-ia').classList.add('hidden');
+
+            if (u.permisos.length > 1) {
+                // Ir a la página de botones inteligentes (Admin)
+                document.getElementById('menu-pestañas').classList.remove('hidden');
+                const lista = document.getElementById('lista-botones');
+                lista.innerHTML = "";
+                u.permisos.forEach(p => {
+                    const btn = document.createElement('button');
+                    btn.className = "btn-menu";
+                    btn.innerText = `➤ ${p}`;
+                    btn.onclick = () => abrirHerramienta(p);
+                    lista.appendChild(btn);
+                });
+            } else {
+                // Ir directo a la única herramienta (Auditor)
+                abrirHerramienta(u.permisos[0]);
+            }
+        }
+
+        function abrirHerramienta(nombre) {
+            document.getElementById('menu-pestañas').classList.add('hidden');
+            document.getElementById('entorno-trabajo').classList.remove('hidden');
+            document.getElementById('workspace-name').innerText = nombre;
+        }
+
+        function volverAlMenu() {
+            const u = db[userActivo];
+            if(u.permisos.length > 1) {
+                document.getElementById('entorno-trabajo').classList.add('hidden');
+                document.getElementById('menu-pestañas').classList.remove('hidden');
+            } else {
+                location.reload();
+            }
+        }
+
+        function copiarYLimpiar() {
             const input = document.getElementById('inputCodigo');
             const res = document.getElementById('resultado');
+            res.innerText = "EXTRAÍDO: " + input.value;
             
-            if (input.value.trim() === "") return;
-
-            res.innerText = "PROCESADO: " + input.value; 
-
             navigator.clipboard.writeText(res.innerText).then(() => {
-                alert("Copiado al portapapeles");
-                // REGLA: Limpiar campos tras la acción
+                alert("Copiado con éxito para WhatsApp");
                 input.value = "";
                 res.innerText = "";
             });
         }
 
-        // REGISTRO DE SERVICE WORKER (Para instalación en celular)
+        function soporte(tipo) {
+            window.open(`https://wa.me/50588888888?text=Ayuda+con+mi+${tipo}`, '_blank');
+        }
+
+        // PWA REGISTRATION
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-            });
+            window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
         }
     </script>
 </body>
