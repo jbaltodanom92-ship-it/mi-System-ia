@@ -17,10 +17,9 @@
         .avatar-frame { width: 140px; height: 140px; border: 1px solid #30363d; display: flex; align-items: center; justify-content: center; background: #010409; overflow: hidden; }
         .avatar-frame i { font-size: 4.5rem; color: #1f4b5e; }
         .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
-        
         .input-group { position: relative; width: 100%; }
         input { width:100%; padding:14px; background:#0d1117; color:white; border:1px solid #30363d; border-radius: 4px; font-size: 1rem; outline: none; box-sizing: border-box; }
-        .toggle-pin { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #444; cursor: pointer; transition: 0.3s; z-index: 5; }
+        .toggle-pin { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #444; cursor: pointer; z-index: 5; }
         .toggle-pin.active { color: var(--accent); }
 
         /* PANEL METRO */
@@ -30,7 +29,7 @@
         .tile.wide { width: 332px; grid-column: span 2; }
         .tile span { position: absolute; bottom: 10px; left: 10px; font-size: 0.75rem; font-weight: bold; }
 
-        /* CONTENEDORES DE HERRAMIENTAS */
+        /* HERRAMIENTAS */
         .ext-container { width: 1050px; display: flex; gap: 25px; background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #1a2026; }
         .side-tools { width: 280px; display: flex; flex-direction: column; align-items: center; gap: 20px; border-right: 1px solid #30363d; padding-right: 20px; }
         .progress-box { position: relative; width: 170px; height: 170px; display: flex; align-items: center; justify-content: center; }
@@ -41,25 +40,31 @@
         .btn-win { width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.2s; }
         .btn-blue { background: #0078d7; color: white; }
         .btn-green { background: #238636; color: white; }
-        .btn-win:active { transform: scale(0.98); }
 
-        /* TABLAS Y LISTAS */
+        /* TABLAS Y MANTENIMIENTO */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
         th { text-align: left; color: var(--accent); border-bottom: 1px solid #333; padding: 8px; }
         td { padding: 8px; border-bottom: 1px solid #1a2026; }
-        .maint-log { background: #010409; border: 1px solid #333; padding: 10px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff41; height: 150px; overflow-y: auto; }
+        .maint-log { background: #010409; border: 1px solid #333; padding: 10px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff41; height: 150px; overflow-y: auto; text-align: left; }
 
         /* CALENDARIO */
         .today-circle { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
         .today-svg { position: absolute; transform: rotate(-90deg); width: 26px; height: 26px; }
 
-        /* IA PROMPT */
-        .ia-decision-box { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-mini { padding: 5px 15px; font-size: 0.8rem; cursor: pointer; border-radius: 4px; border: 1px solid var(--accent); background: none; color: white; transition: 0.3s; }
-        .btn-mini:hover { background: var(--accent); color: black; }
+        /* MODAL DE ALARMA PERSISTENTE (NUEVO) */
+        #alarm-modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; }
     </style>
 </head>
 <body onmousemove="resetInactivity()" ontouchstart="resetInactivity()" onkeydown="resetInactivity()">
+
+    <div id="alarm-modal" class="display-none">
+        <div style="text-align: center; border: 2px solid var(--accent); padding: 40px; border-radius: 12px; background: var(--card); width: 80%; max-width: 500px;">
+            <i class="fa-solid fa-bell-concierge fa-4x" style="color: var(--accent); margin-bottom: 20px;"></i>
+            <h2 style="color: var(--accent);">NOTIFICACI&Oacute;N DE IA</h2>
+            <p id="alarm-text" style="font-size: 1.2rem; margin-bottom: 25px;"></p>
+            <button class="btn-win btn-blue" onclick="silenceAlarm()">ACEPTAR NOTIFICACI&Oacute;N</button>
+        </div>
+    </div>
 
     <div id="v-login" class="view">
         <div class="login-card">
@@ -77,9 +82,9 @@
                 </div>
                 <div id="ia-prompt" class="hidden display-none">
                     <p style="font-size:0.8rem; margin:10px 0; color:var(--error);">&iquest;Deseas asistencia de IT?</p>
-                    <div class="ia-decision-box">
-                        <button class="btn-mini" onclick="enableITSupport()">S&Iacute;</button>
-                        <button class="btn-mini" onclick="closeIAPrompt()">NO</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-mini" style="padding:5px 15px; border-radius:4px; border:1px solid var(--accent); background:none; color:white;" onclick="enableITSupport()">S&Iacute;</button>
+                        <button class="btn-mini" style="padding:5px 15px; border-radius:4px; border:1px solid var(--accent); background:none; color:white;" onclick="closeIAPrompt()">NO</button>
                     </div>
                 </div>
                 <button id="it-support" class="btn-win btn-blue hidden display-none" style="margin-top:15px;" onclick="sendITWhatsApp()">
@@ -93,7 +98,14 @@
         <div style="width: 80%;">
             <h1 style="font-size: 3.5rem; font-weight: 100; margin: 0;">Hola, <span id="user-name"></span></h1>
             <div id="ia-team-news" style="margin-top: 20px; padding: 20px; border-left: 4px solid var(--accent); background: rgba(0,242,255,0.05);"></div>
-            <button class="btn-win btn-blue" style="width: 220px; margin-top: 30px;" onclick="showView('v-panel')">CONTINUAR AL DASHBOARD</button>
+            
+            <div id="ia-learning-zone" class="display-none" style="margin-top: 20px; padding: 15px; background: rgba(0,242,255,0.1); border-radius: 8px;">
+                <p id="ia-learning-speech" style="font-size: 1rem;"></p>
+                <input type="time" id="lunch-time-in" style="width: 150px; margin-right: 10px;">
+                <button class="btn-win btn-blue" style="width: 180px;" onclick="saveLunchTime()">APRENDER HORARIO</button>
+            </div>
+
+            <button class="btn-win btn-blue" style="width: 220px; margin-top: 30px;" onclick="showView('v-panel')">DASHBOARD</button>
         </div>
     </div>
 
@@ -131,7 +143,7 @@
             <div style="flex-grow:1; display:flex; flex-direction:column; gap:12px;">
                 <h3 style="color:var(--accent); margin:0;">Herramienta de Extracci&oacute;n Blindada</h3>
                 <textarea id="raw-in" placeholder="Pegue la lista aqu&iacute;..." oninput="toggleRun()"></textarea>
-                <button id="btn-run" class="btn-win btn-blue hidden display-none" onclick="processX()">EXTRAER &Uacute;LTIMOS 8 D&Iacute;GITOS</button>
+                <button id="btn-run" class="btn-win btn-blue hidden display-none" onclick="processX()">EXTRAER ÚLTIMOS 8 DÍGITOS</button>
                 <div id="out-box" class="hidden display-none">
                     <textarea id="txt-out" readonly></textarea>
                     <button class="btn-win btn-green" style="margin-top:10px;" onclick="copyFinish()"><i class="fa-brands fa-whatsapp"></i> COPIAR HORIZONTAL</button>
@@ -156,7 +168,6 @@
     <div id="v-sys-maint" class="view hidden">
         <div class="ext-container" style="width: 800px; flex-direction: column;">
             <h3>Mantenimiento del Sistema WebApp</h3>
-            <p style="font-size:0.8rem; opacity:0.7;">Consola de integridad y depuraci&oacute;n de scripts.</p>
             <div class="maint-log" id="maint-console">> Esperando instrucci&oacute;n...</div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
                 <button class="btn-win btn-blue" onclick="runMaint('Depurando Base de Datos...')">Limpiar Cache</button>
@@ -168,15 +179,12 @@
 
     <div id="v-team" class="view hidden">
         <div class="ext-container" style="width: 700px; flex-direction: column;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>Cumplea&ntilde;eros del Equipo</h3>
-                <i class="fa-solid fa-cake-candles" style="color:var(--accent)"></i>
-            </div>
+            <h3>Cumplea&ntilde;eros del Equipo</h3>
             <table>
                 <thead><tr><th>Colaborador</th><th>Fecha</th><th>Estatus</th></tr></thead>
                 <tbody id="team-body"></tbody>
             </table>
-            <button class="btn-win" style="background:#333; margin-top:20px;" onclick="showView('v-panel')">VOLVER AL INICIO</button>
+            <button class="btn-win" style="background:#333; margin-top:20px;" onclick="showView('v-panel')">VOLVER</button>
         </div>
     </div>
 
@@ -186,20 +194,100 @@
     <script>
         let activeUser = "";
         let typingTimer;
+        let alarmActive = false;
+        let alarmInterval;
         const BD_AUTH = { "JBaltodano_Admin": "404471" };
-        
-        // BASE DE DATOS DEL EQUIPO (Modificable)
         const BD_EQUIPO = [
-            { n: "Ing. Baltodano", m: 3, d: 15 }, // Ejemplo: Abril 15
-            { n: "Asistente IT", m: 0, d: 20 },   // Ejemplo: Enero 20
-            { n: "Fabiana", m: 2, d: 10 }        // Ejemplo: Marzo 10
+            { n: "Ing. Baltodano", m: 3, d: 15 },
+            { n: "Fabiana", m: 2, d: 10 },
+            { n: "Hilda", m: 1, d: 27 }
         ];
 
+        function speak(text) {
+            const synth = window.speechSynthesis;
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'es-ES'; utter.rate = 0.9;
+            synth.speak(utter);
+        }
+
+        // --- SISTEMA DE ALARMA PERSISTENTE ---
+        function triggerAlarm(msg) {
+            if (alarmActive) return;
+            alarmActive = true;
+            document.getElementById('alarm-text').innerText = msg;
+            document.getElementById('alarm-modal').classList.remove('display-none');
+            alarmInterval = setInterval(() => speak(msg), 10000);
+            speak(msg);
+        }
+
+        function silenceAlarm() {
+            alarmActive = false;
+            clearInterval(alarmInterval);
+            document.getElementById('alarm-modal').classList.add('display-none');
+            window.speechSynthesis.cancel();
+        }
+
+        // --- IA DE APRENDIZAJE ---
+        function initIAWelcome() {
+            const savedTime = localStorage.getItem('lunch_time');
+            const lastAsk = localStorage.getItem('last_lunch_ask');
+            const now = Date.now();
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+
+            if (!savedTime || (now - lastAsk > oneWeek)) {
+                const txt = "Jose Alfredo, necesito actualizar tu horario de almuerzo para esta semana.";
+                document.getElementById('ia-learning-speech').innerText = "IA: " + txt;
+                document.getElementById('ia-learning-zone').classList.remove('display-none');
+                speak(txt);
+            } else {
+                speak(`Bienvenido de nuevo Jose Alfredo. Alarma de las ${savedTime} configurada.`);
+            }
+        }
+
+        function saveLunchTime() {
+            const time = document.getElementById('lunch-time-in').value;
+            if (time) {
+                localStorage.setItem('lunch_time', time);
+                localStorage.setItem('last_lunch_ask', Date.now());
+                document.getElementById('ia-learning-zone').classList.add('display-none');
+                speak("Horario aprendido. Te avisaré 15 minutos antes.");
+            }
+        }
+
+        // --- MOTOR DEL SISTEMA (Reloj, Círculo, Alarmas) ---
+        function initEngine() {
+            const ctx = document.getElementById('progCanvas').getContext('2d');
+            setInterval(() => {
+                const now = new Date();
+                const h = now.getHours(); const m = now.getMinutes(); const s = now.getSeconds();
+                document.getElementById('d-time').innerText = now.toLocaleTimeString();
+
+                // Lógica de Alarma 15 min antes
+                const lunch = localStorage.getItem('lunch_time');
+                if (lunch) {
+                    const [lH, lM] = lunch.split(':').map(Number);
+                    let target = new Date(); target.setHours(lH, lM, 0);
+                    let diff = (target - now) / 60000;
+                    if (diff > 14.8 && diff <= 15) triggerAlarm("Jose Alfredo, faltan 15 minutos para tu almuerzo.");
+                }
+                if (h === 16 && m === 45 && s === 0) triggerAlarm("Faltan 15 minutos para finalizar tu jornada.");
+
+                // Progreso Círculo
+                let start = 7, end = 17;
+                let p = (h >= start && h < end) ? ((h-start)*3600 + m*60 + s) / ((end-start)*3600) : (h >= end ? 1 : 0);
+                
+                ctx.clearRect(0,0,170,170);
+                ctx.beginPath(); ctx.arc(85,85,80,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=8; ctx.stroke();
+                ctx.beginPath(); ctx.arc(85,85,80,0,p*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.lineCap="round"; ctx.stroke();
+                drawCal(p);
+                if(h === 17 && m === 0 && s === 0) regExtra(now);
+            }, 1000);
+        }
+
+        // --- TODAS LAS FUNCIONES ORIGINALES (LOGIN, CUMPLES, CALENDARIO) ---
         function resetInactivity() {
             clearTimeout(typingTimer);
-            if(!document.getElementById('v-login').classList.contains('hidden')) {
-                typingTimer = setTimeout(iaCheckStatus, 2500);
-            }
+            if(!document.getElementById('v-login').classList.contains('hidden')) typingTimer = setTimeout(iaCheckStatus, 2500);
         }
 
         function iaCheckStatus() {
@@ -209,29 +297,13 @@
             else if (activeUser !== "" && pVal.length > 0 && pVal !== BD_AUTH[activeUser]) showIAPrompt("IA: PIN no v&aacute;lido.");
         }
 
-        function showIAPrompt(msg) {
-            document.getElementById('asis-msg').innerHTML = msg;
-            document.getElementById('ia-prompt').classList.remove('hidden', 'display-none');
-        }
-
-        function cleanAsisUI() {
-            document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
-            document.getElementById('it-support').classList.add('hidden', 'display-none');
-        }
-
-        function enableITSupport() {
-            document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
-            document.getElementById('it-support').classList.remove('hidden', 'display-none');
-        }
-
-        function closeIAPrompt() {
-            document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
-            document.getElementById('asis-msg').innerText = "IA: Reintente acceso.";
-        }
+        function showIAPrompt(msg) { document.getElementById('asis-msg').innerHTML = msg; document.getElementById('ia-prompt').classList.remove('hidden', 'display-none'); }
+        function cleanAsisUI() { document.getElementById('ia-prompt').classList.add('hidden', 'display-none'); document.getElementById('it-support').classList.add('hidden', 'display-none'); }
+        function enableITSupport() { document.getElementById('ia-prompt').classList.add('hidden', 'display-none'); document.getElementById('it-support').classList.remove('hidden', 'display-none'); }
+        function closeIAPrompt() { document.getElementById('ia-prompt').classList.add('hidden', 'display-none'); document.getElementById('asis-msg').innerText = "IA: Reintente acceso."; }
 
         function iaIdentify(val) {
-            resetInactivity();
-            cleanAsisUI();
+            resetInactivity(); cleanAsisUI();
             if(BD_AUTH[val]) {
                 activeUser = val;
                 document.getElementById('asis-msg').innerText = "IA: Usuario OK. Ingrese PIN.";
@@ -244,53 +316,32 @@
         }
 
         function iaAuth(val) {
-            resetInactivity();
             if(val === BD_AUTH[activeUser]) {
                 document.getElementById('user-name').innerText = "Jose Alfredo";
                 showView('v-welcome');
                 iaTeamLogic();
+                initIAWelcome();
                 addLog(activeUser);
             }
         }
 
         function togglePinSee() {
-            const p = document.getElementById('p-in');
-            p.type = p.type === "password" ? "text" : "password";
+            const p = document.getElementById('p-in'); p.type = p.type === "password" ? "text" : "password";
             document.getElementById('pin-eye').classList.toggle('active');
         }
 
-        function sendITWhatsApp() {
-            window.open(`https://wa.me/50584386180?text=Soporte solicitado para acceso WebApp JABM.`, '_blank');
-        }
+        function sendITWhatsApp() { window.open(`https://wa.me/50584386180?text=Soporte solicitado para acceso WebApp JABM.`, '_blank'); }
 
         function showView(id) {
             document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function initEngine() {
-            const ctx = document.getElementById('progCanvas').getContext('2d');
-            setInterval(() => {
-                const now = new Date();
-                document.getElementById('d-time').innerText = now.toLocaleTimeString();
-                let start = 7, end = 17, h = now.getHours(), m = now.getMinutes();
-                let p = 0;
-                if(h >= start && h < end) p = ((h-start)*3600 + m*60 + now.getSeconds()) / ((end-start)*3600);
-                else if(h >= end) p = 1;
-                
-                ctx.clearRect(0,0,170,170);
-                ctx.beginPath(); ctx.arc(85,85,80,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=8; ctx.stroke();
-                ctx.beginPath(); ctx.arc(85,85,80,0,p*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.lineCap="round"; ctx.stroke();
-                drawCal(p);
-                if(h === 17 && m === 0 && now.getSeconds() === 0) regExtra(now);
-            }, 1000);
-        }
-
         function drawCal(progress) {
             const d = new Date(), month = d.getMonth(), year = d.getFullYear();
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            let html = `<div style="text-align:center; color:var(--accent); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">${new Intl.DateTimeFormat('es-ES', { month: 'long'}).format(d).toUpperCase()}</div><div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem;">`;
+            let html = `<div style="text-align:center; color:var(--accent); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">${new Intl.DateTimeFormat('es-ES', { month: 'long'}).format(d).toUpperCase()}</div><div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.75rem;">`;
             "DLMMJVS".split('').map(l => html += `<span style="opacity:0.3">${l}</span>`);
             for(let e=0; e<firstDay; e++) html += `<span></span>`;
             for(let i=1; i<=daysInMonth; i++) {
@@ -302,15 +353,12 @@
             document.getElementById('cal-ui').innerHTML = html + "</div>";
         }
 
-        function toggleRun() {
-            document.getElementById('btn-run').className = document.getElementById('raw-in').value.trim() ? "btn-win btn-blue" : "display-none";
-        }
-
         function processX() {
             const raw = document.getElementById('raw-in').value.split('\n');
             const clean = raw.map(l => l.trim()).filter(l => l.length >= 8).map(l => l.slice(-8));
             document.getElementById('txt-out').value = clean.join(' ');
             document.getElementById('out-box').classList.remove('hidden', 'display-none');
+            speak("Extracción blindada completada.");
         }
 
         function copyFinish() {
@@ -320,16 +368,16 @@
             toggleRun();
         }
 
+        function toggleRun() { document.getElementById('btn-run').className = document.getElementById('raw-in').value.trim() ? "btn-win btn-blue" : "display-none"; }
+
         function iaTeamLogic() {
             const now = new Date(), box = document.getElementById('ia-team-news'), tBody = document.getElementById('team-body');
             let htmlNews = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Control de Equipo activo.</p>`;
             tBody.innerHTML = "";
-            
             BD_EQUIPO.forEach(f => {
                 let bday = new Date(now.getFullYear(), f.m, f.d);
                 let diff = Math.ceil((bday - now) / (1000*60*60*24));
                 if(diff < 0) { bday.setFullYear(now.getFullYear()+1); diff = Math.ceil((bday-now)/(1000*60*60*24)); }
-                
                 let row = `<tr><td>${f.n}</td><td>${f.d}/${f.m+1}</td>`;
                 if(now.getMonth() === f.m && now.getDate() === f.d) {
                     htmlNews += `<p style="color:var(--accent); font-weight:bold;">&iexcl;FELICITAR HOY! Cumplea&ntilde;os de ${f.n}.</p>`;
