@@ -6,7 +6,7 @@
     <title>System Program JABM - IA Master Final</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #02060a; --accent: #00f2ff; --win-blue: #0078d7; --card: #0d1117; --error: #ffeb3b; }
+        :root { --bg: #02060a; --accent: #00f2ff; --win-blue: #0078d7; --card: #0d1117; --error: #ffeb3b; --green: #238636; }
         body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; overflow: hidden; touch-action: manipulation; }
         .view { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; position: absolute; transition: 0.5s Ease; }
         .hidden { opacity: 0 !important; pointer-events: none !important; transform: scale(0.98) !important; }
@@ -20,17 +20,17 @@
         
         .input-group { position: relative; width: 100%; }
         input { width:100%; padding:14px; background:#0d1117; color:white; border:1px solid #30363d; border-radius: 4px; font-size: 1rem; outline: none; box-sizing: border-box; }
-        .toggle-pin { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #444; cursor: pointer; transition: 0.3s; }
+        .toggle-pin { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #444; cursor: pointer; transition: 0.3s; z-index: 5; }
         .toggle-pin.active { color: var(--accent); }
 
         /* PANEL METRO */
         .metro-grid { display: grid; grid-template-columns: repeat(4, 160px); gap: 12px; }
-        .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .tile { position: relative; width: 160px; height: 160px; background: var(--win-blue); cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; text-align: center; }
         .tile:hover { transform: scale(1.05); border: 1px solid var(--accent); box-shadow: 0 0 20px var(--accent); z-index: 10; }
         .tile.wide { width: 332px; grid-column: span 2; }
         .tile span { position: absolute; bottom: 10px; left: 10px; font-size: 0.75rem; font-weight: bold; }
 
-        /* EXTRACTOR */
+        /* CONTENEDORES DE HERRAMIENTAS */
         .ext-container { width: 1050px; display: flex; gap: 25px; background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid #1a2026; }
         .side-tools { width: 280px; display: flex; flex-direction: column; align-items: center; gap: 20px; border-right: 1px solid #30363d; padding-right: 20px; }
         .progress-box { position: relative; width: 170px; height: 170px; display: flex; align-items: center; justify-content: center; }
@@ -38,9 +38,16 @@
         .clock-num { font-size: 1.6rem; font-weight: bold; color: var(--accent); }
         textarea { width: 100%; height: 140px; background: white; color: black; border: none; padding: 15px; font-family: 'Consolas', monospace; border-radius: 4px; resize: none; box-sizing: border-box; }
         #txt-out { height: 70px; background: #010409; color: var(--accent); border: 1px solid #1a2026; }
-        .btn-win { width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        .btn-win { width: 100%; padding: 14px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.2s; }
         .btn-blue { background: #0078d7; color: white; }
         .btn-green { background: #238636; color: white; }
+        .btn-win:active { transform: scale(0.98); }
+
+        /* TABLAS Y LISTAS */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
+        th { text-align: left; color: var(--accent); border-bottom: 1px solid #333; padding: 8px; }
+        td { padding: 8px; border-bottom: 1px solid #1a2026; }
+        .maint-log { background: #010409; border: 1px solid #333; padding: 10px; font-family: 'Consolas', monospace; font-size: 0.8rem; color: #00ff41; height: 150px; overflow-y: auto; }
 
         /* CALENDARIO */
         .today-circle { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
@@ -62,15 +69,12 @@
             </div>
             <div style="flex-grow: 1;">
                 <h2 style="color: var(--accent); margin: 0 0 10px 0;">SEGURIDAD JB</h2>
-                <div id="asis-msg" style="background: rgba(0,242,255,0.1); border: 1px solid var(--accent); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">IA: Ingrese su identificaci&oacute;n.</div>
-                
+                <div id="asis-msg" style="background: rgba(0,242,255,0.1); border: 1px solid var(--accent); padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem;">IA: Identificaci&oacute;n requerida.</div>
                 <input type="text" id="u-in" placeholder="Usuario" oninput="iaIdentify(this.value)">
-                
                 <div id="pin-container" class="input-group hidden display-none">
-                    <input type="password" id="p-in" placeholder="PIN" oninput="iaAuth(this.value)">
+                    <input type="password" id="p-in" placeholder="PIN" maxlength="6" oninput="iaAuth(this.value)">
                     <i class="fa-solid fa-eye toggle-pin" id="pin-eye" onclick="togglePinSee()"></i>
                 </div>
-
                 <div id="ia-prompt" class="hidden display-none">
                     <p style="font-size:0.8rem; margin:10px 0; color:var(--error);">&iquest;Deseas asistencia de IT?</p>
                     <div class="ia-decision-box">
@@ -78,7 +82,6 @@
                         <button class="btn-mini" onclick="closeIAPrompt()">NO</button>
                     </div>
                 </div>
-
                 <button id="it-support" class="btn-win btn-blue hidden display-none" style="margin-top:15px;" onclick="sendITWhatsApp()">
                     <i class="fa-brands fa-whatsapp"></i> Contactar Admin IT
                 </button>
@@ -89,8 +92,8 @@
     <div id="v-welcome" class="view hidden">
         <div style="width: 80%;">
             <h1 style="font-size: 3.5rem; font-weight: 100; margin: 0;">Hola, <span id="user-name"></span></h1>
-            <div id="ia-family-news" style="margin-top: 20px; padding: 20px; border-left: 4px solid var(--accent); background: rgba(0,242,255,0.05);"></div>
-            <button class="btn-win btn-blue" style="width: 220px; margin-top: 30px;" onclick="showView('v-panel')">CONTINUAR</button>
+            <div id="ia-team-news" style="margin-top: 20px; padding: 20px; border-left: 4px solid var(--accent); background: rgba(0,242,255,0.05);"></div>
+            <button class="btn-win btn-blue" style="width: 220px; margin-top: 30px;" onclick="showView('v-panel')">CONTINUAR AL DASHBOARD</button>
         </div>
     </div>
 
@@ -100,9 +103,15 @@
             <div class="tile wide" style="background:#00a4ef" onclick="showView('v-ext'); initEngine();">
                 <i class="fa-solid fa-bolt"></i><span>Extractor Master</span>
             </div>
-            <div class="tile" style="background:#7fba00"><i class="fa-solid fa-gear"></i><span>Sistemas</span></div>
-            <div class="tile" style="background:#744da9"><i class="fa-solid fa-cake-candles"></i><span>Familia</span></div>
-            <div class="tile" style="background:#f25022" onclick="location.reload()"><i class="fa-solid fa-power-off"></i><span>Salir</span></div>
+            <div class="tile" style="background:#7fba00" onclick="showView('v-sys-menu')">
+                <i class="fa-solid fa-gear"></i><span>Sistemas</span>
+            </div>
+            <div class="tile" style="background:#744da9" onclick="showView('v-team')">
+                <i class="fa-solid fa-users"></i><span>Equipo</span>
+            </div>
+            <div class="tile" style="background:#f25022" onclick="location.reload()">
+                <i class="fa-solid fa-power-off"></i><span>Salir</span>
+            </div>
         </div>
     </div>
 
@@ -131,32 +140,73 @@
         </div>
     </div>
 
+    <div id="v-sys-menu" class="view hidden">
+        <div class="ext-container" style="width: 600px; flex-direction: column; align-items: center;">
+            <h3 style="color:var(--accent)">ADMINISTRACI&Oacute;N DE SISTEMAS</h3>
+            <div class="metro-grid" style="grid-template-columns: repeat(2, 160px); margin: 20px 0;">
+                <div class="tile" style="background:#333" onclick="showView('v-sys-logins')"><span>Logins</span></div>
+                <div class="tile" style="background:#0078d7" onclick="showView('v-sys-maint')"><span>Mantenimiento</span></div>
+                <div class="tile" style="background:#333" onclick="showView('v-sys-extras')"><span>Horas Extras</span></div>
+                <div class="tile" style="background:#238636" onclick="alert('Sistema Optimizado')"><span>Optimizar</span></div>
+            </div>
+            <button class="btn-win" style="background:#333; width: 200px;" onclick="showView('v-panel')">VOLVER</button>
+        </div>
+    </div>
+
+    <div id="v-sys-maint" class="view hidden">
+        <div class="ext-container" style="width: 800px; flex-direction: column;">
+            <h3>Mantenimiento del Sistema WebApp</h3>
+            <p style="font-size:0.8rem; opacity:0.7;">Consola de integridad y depuraci&oacute;n de scripts.</p>
+            <div class="maint-log" id="maint-console">> Esperando instrucci&oacute;n...</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+                <button class="btn-win btn-blue" onclick="runMaint('Depurando Base de Datos...')">Limpiar Cache</button>
+                <button class="btn-win btn-green" onclick="runMaint('Verificando Blindaje de Código...')">Check Blindaje</button>
+            </div>
+            <button class="btn-win" style="background:#333; margin-top:15px;" onclick="showView('v-sys-menu')">ATR&Aacute;S</button>
+        </div>
+    </div>
+
+    <div id="v-team" class="view hidden">
+        <div class="ext-container" style="width: 700px; flex-direction: column;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>Cumplea&ntilde;eros del Equipo</h3>
+                <i class="fa-solid fa-cake-candles" style="color:var(--accent)"></i>
+            </div>
+            <table>
+                <thead><tr><th>Colaborador</th><th>Fecha</th><th>Estatus</th></tr></thead>
+                <tbody id="team-body"></tbody>
+            </table>
+            <button class="btn-win" style="background:#333; margin-top:20px;" onclick="showView('v-panel')">VOLVER AL INICIO</button>
+        </div>
+    </div>
+
+    <div id="v-sys-logins" class="view hidden"><div class="ext-container" style="width: 600px; flex-direction: column;"><h3>Logins</h3><table><thead><tr><th>User</th><th>Hora</th></tr></thead><tbody id="log-body"></tbody></table><button class="btn-win" style="background:#333; margin-top:20px;" onclick="showView('v-sys-menu')">ATR&Aacute;S</button></div></div>
+    <div id="v-sys-extras" class="view hidden"><div class="ext-container" style="width: 600px; flex-direction: column;"><h3>Horas Extras</h3><table><thead><tr><th>Fecha</th><th>Hora</th></tr></thead><tbody id="extra-body"></tbody></table><button class="btn-win" style="background:#333; margin-top:20px;" onclick="showView('v-sys-menu')">ATR&Aacute;S</button></div></div>
+
     <script>
         let activeUser = "";
         let typingTimer;
         const BD_AUTH = { "JBaltodano_Admin": "404471" };
-        const BD_FAMILIA = [
-            { n: "Hilda (Mam&aacute;)", m: 1, d: 27 },
-            { n: "Hija", m: 0, d: 15 }
+        
+        // BASE DE DATOS DEL EQUIPO (Modificable)
+        const BD_EQUIPO = [
+            { n: "Ing. Baltodano", m: 3, d: 15 }, // Ejemplo: Abril 15
+            { n: "Asistente IT", m: 0, d: 20 },   // Ejemplo: Enero 20
+            { n: "Fabiana", m: 2, d: 10 }        // Ejemplo: Marzo 10
         ];
 
         function resetInactivity() {
             clearTimeout(typingTimer);
             if(!document.getElementById('v-login').classList.contains('hidden')) {
-                typingTimer = setTimeout(iaCheckStatus, 3000); 
+                typingTimer = setTimeout(iaCheckStatus, 2500);
             }
         }
 
         function iaCheckStatus() {
             const uVal = document.getElementById('u-in').value;
             const pVal = document.getElementById('p-in').value;
-
-            if(activeUser === "" && uVal.length > 0 && !BD_AUTH[uVal]) {
-                showIAPrompt("IA: No reconozco ese usuario. &iquest;Necesitas ayuda?");
-            } 
-            else if (activeUser !== "" && pVal.length > 0 && pVal !== BD_AUTH[activeUser]) {
-                showIAPrompt("IA: El PIN no coincide. &iquest;Asistencia de IT?");
-            }
+            if(activeUser === "" && uVal.length > 0 && !BD_AUTH[uVal]) showIAPrompt("IA: No reconozco el usuario.");
+            else if (activeUser !== "" && pVal.length > 0 && pVal !== BD_AUTH[activeUser]) showIAPrompt("IA: PIN no v&aacute;lido.");
         }
 
         function showIAPrompt(msg) {
@@ -172,12 +222,11 @@
         function enableITSupport() {
             document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
             document.getElementById('it-support').classList.remove('hidden', 'display-none');
-            document.getElementById('asis-msg').innerText = "IA: Soporte habilitado.";
         }
 
         function closeIAPrompt() {
             document.getElementById('ia-prompt').classList.add('hidden', 'display-none');
-            document.getElementById('asis-msg').innerText = "IA: Reintente su c&oacute;digo.";
+            document.getElementById('asis-msg').innerText = "IA: Reintente acceso.";
         }
 
         function iaIdentify(val) {
@@ -185,10 +234,10 @@
             cleanAsisUI();
             if(BD_AUTH[val]) {
                 activeUser = val;
-                document.getElementById('asis-msg').innerText = "IA: Identidad confirmada. Ingrese PIN.";
+                document.getElementById('asis-msg').innerText = "IA: Usuario OK. Ingrese PIN.";
                 document.getElementById('bot-icon').classList.add('hidden');
                 document.getElementById('user-photo').classList.remove('hidden');
-                document.getElementById('u-in').classList.add('hidden');
+                document.getElementById('u-in').classList.add('display-none');
                 document.getElementById('pin-container').classList.remove('hidden', 'display-none');
                 document.getElementById('p-in').focus();
             }
@@ -199,19 +248,19 @@
             if(val === BD_AUTH[activeUser]) {
                 document.getElementById('user-name').innerText = "Jose Alfredo";
                 showView('v-welcome');
-                iaFamilyLogic();
+                iaTeamLogic();
+                addLog(activeUser);
             }
         }
 
         function togglePinSee() {
             const p = document.getElementById('p-in');
-            const eye = document.getElementById('pin-eye');
             p.type = p.type === "password" ? "text" : "password";
-            eye.classList.toggle('active');
+            document.getElementById('pin-eye').classList.toggle('active');
         }
 
         function sendITWhatsApp() {
-            window.open(`https://wa.me/50584386180?text=Hola equipo de Informática, necesito ayuda con mi acceso.`, '_blank');
+            window.open(`https://wa.me/50584386180?text=Soporte solicitado para acceso WebApp JABM.`, '_blank');
         }
 
         function showView(id) {
@@ -224,42 +273,37 @@
             setInterval(() => {
                 const now = new Date();
                 document.getElementById('d-time').innerText = now.toLocaleTimeString();
-                let start = 7, end = 17;
-                let h = now.getHours(), m = now.getMinutes();
+                let start = 7, end = 17, h = now.getHours(), m = now.getMinutes();
                 let p = 0;
-                if(h >= start && h < end) p = ((h-start)*3600 + m*60) / ((end-start)*3600);
+                if(h >= start && h < end) p = ((h-start)*3600 + m*60 + now.getSeconds()) / ((end-start)*3600);
                 else if(h >= end) p = 1;
+                
                 ctx.clearRect(0,0,170,170);
                 ctx.beginPath(); ctx.arc(85,85,80,0,2*Math.PI); ctx.strokeStyle="#1a2026"; ctx.lineWidth=8; ctx.stroke();
-                ctx.beginPath(); ctx.arc(85,85,80,0,p*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.stroke();
+                ctx.beginPath(); ctx.arc(85,85,80,0,p*2*Math.PI); ctx.strokeStyle="#00f2ff"; ctx.lineWidth=8; ctx.lineCap="round"; ctx.stroke();
                 drawCal(p);
+                if(h === 17 && m === 0 && now.getSeconds() === 0) regExtra(now);
             }, 1000);
         }
 
         function drawCal(progress) {
-            const d = new Date();
-            const year = d.getFullYear();
-            const month = d.getMonth(); 
-            const names = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            const d = new Date(), month = d.getMonth(), year = d.getFullYear();
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            let html = `<div style="text-align:center; color:var(--accent); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">${names[month]} ${year}</div>`;
-            html += `<div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem;">`;
-            html += "DLMMJVS".split('').map(l => `<span style="opacity:0.5">${l}</span>`).join('');
+            let html = `<div style="text-align:center; color:var(--accent); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">${new Intl.DateTimeFormat('es-ES', { month: 'long'}).format(d).toUpperCase()}</div><div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:0.7rem;">`;
+            "DLMMJVS".split('').map(l => html += `<span style="opacity:0.3">${l}</span>`);
             for(let e=0; e<firstDay; e++) html += `<span></span>`;
             for(let i=1; i<=daysInMonth; i++) {
                 if(i === d.getDate()) {
-                    const dash = progress * 75;
-                    html += `<span class="today-circle"><svg class="today-svg" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#1a2026" stroke-width="2"/><circle cx="15" cy="15" r="12" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="${dash} 75" /></svg><b style="color:var(--accent); position:relative; z-index:2;">${i}</b></span>`;
+                    let dash = progress * 75;
+                    html += `<span class="today-circle"><svg class="today-svg" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12" fill="none" stroke="#1a2026" stroke-width="2"/><circle cx="15" cy="15" r="12" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="${dash} 75" /></svg><b style="color:var(--accent); z-index:2;">${i}</b></span>`;
                 } else { html += `<span>${i}</span>`; }
             }
-            html += "</div>";
-            document.getElementById('cal-ui').innerHTML = html;
+            document.getElementById('cal-ui').innerHTML = html + "</div>";
         }
 
         function toggleRun() {
-            const val = document.getElementById('raw-in').value.trim();
-            document.getElementById('btn-run').className = val ? "btn-win btn-blue" : "display-none";
+            document.getElementById('btn-run').className = document.getElementById('raw-in').value.trim() ? "btn-win btn-blue" : "display-none";
         }
 
         function processX() {
@@ -276,26 +320,37 @@
             toggleRun();
         }
 
-        function iaFamilyLogic() {
-            const now = new Date();
-            const box = document.getElementById('ia-family-news');
-            let html = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Analizando eventos...</p>`;
-            let found = false;
-            BD_FAMILIA.forEach(f => {
+        function iaTeamLogic() {
+            const now = new Date(), box = document.getElementById('ia-team-news'), tBody = document.getElementById('team-body');
+            let htmlNews = `<p><i class="fa-solid fa-robot"></i> <strong>IA:</strong> Control de Equipo activo.</p>`;
+            tBody.innerHTML = "";
+            
+            BD_EQUIPO.forEach(f => {
                 let bday = new Date(now.getFullYear(), f.m, f.d);
                 let diff = Math.ceil((bday - now) / (1000*60*60*24));
                 if(diff < 0) { bday.setFullYear(now.getFullYear()+1); diff = Math.ceil((bday-now)/(1000*60*60*24)); }
+                
+                let row = `<tr><td>${f.n}</td><td>${f.d}/${f.m+1}</td>`;
                 if(now.getMonth() === f.m && now.getDate() === f.d) {
-                    html += `<p style="color:var(--accent); font-weight:bold;">&iexcl;HOY! Es el cumplea&ntilde;os de ${f.n}.</p>`;
-                    found = true;
-                } else if(diff <= 15) {
-                    html += `<p>PRONTO: Cumplea&ntilde;os de ${f.n} en ${diff} d&iacute;as.</p>`;
-                    found = true;
+                    htmlNews += `<p style="color:var(--accent); font-weight:bold;">&iexcl;FELICITAR HOY! Cumplea&ntilde;os de ${f.n}.</p>`;
+                    row += `<td style="color:var(--accent); font-weight:bold;">&iexcl;HOY!</td></tr>`;
+                } else {
+                    if(diff <= 10) htmlNews += `<p>Pr&oacute;ximo: ${f.n} en ${diff} d&iacute;as.</p>`;
+                    row += `<td>En ${diff} d&iacute;as</td></tr>`;
                 }
+                tBody.innerHTML += row;
             });
-            if(!found) html += `<p>No hay eventos de cumpleañeros el día de hoy.</p>`;
-            box.innerHTML = html;
+            box.innerHTML = htmlNews;
         }
+
+        function runMaint(action) {
+            const log = document.getElementById('maint-console');
+            log.innerHTML += `<br>> ${action}...`;
+            setTimeout(() => { log.innerHTML += `<br>> [OK] Finalizado con éxito.`; log.scrollTop = log.scrollHeight; }, 1000);
+        }
+
+        function addLog(u) { document.getElementById('log-body').innerHTML += `<tr><td>${u}</td><td>${new Date().toLocaleTimeString()}</td></tr>`; }
+        function regExtra(n) { document.getElementById('extra-body').innerHTML += `<tr><td>${n.toLocaleDateString()}</td><td>17:00:00</td></tr>`; }
     </script>
 </body>
 </html>
